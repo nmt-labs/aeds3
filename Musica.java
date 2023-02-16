@@ -1,5 +1,4 @@
 /*
- * resolver artists no método fromByteArray
  * ainda precisa ser testado
  */
 import java.util.ArrayList;
