@@ -88,12 +88,9 @@ public class Musica {
     id = dis.readUTF();
     name = dis.readUTF();
 
-    // arrumar essa parte
-    ArrayList<String> artists_temp = new ArrayList<String>();
-    for(String artist : artists){
-      artists_temp.add(dis.readUTF());
+    while (dis.available() > 0) {
+      artists.add(dis.readUTF());
     }
-    artists = artists_temp;
 
     duration_ms = dis.read();
     explicit = dis.read();
