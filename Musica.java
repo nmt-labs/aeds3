@@ -1,5 +1,17 @@
-import java.util.Date;
+/*
+ * resolver artists no método fromByteArray
+ * ainda precisa ser testado
+ */
 import java.util.ArrayList;
+import java.util.Date;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.io.DataOutputStream;
 
 public class Musica {
   protected String id, name;
@@ -44,4 +56,62 @@ public class Musica {
   public int getExplicit() { return explicit; }
   public float getLoudness() { return loudness; }
   public Date getRelease_date() { return release_date; }
+
+  // ----------------------------------- fim constructor -----------------------------------
+
+  // transformar um objeto em um byte array
+  public byte[] toByteArray() throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(baos);
+
+    // converter data para string
+    DateFormat date_format = new SimpleDateFormat("yyyy-mm-dd");
+    String release_date_string = date_format.format(release_date);
+
+    dos.writeUTF(id);
+    dos.writeUTF(name);
+    for(String artist : artists){
+      dos.writeUTF(artist);
+    }
+    dos.write(duration_ms);
+    dos.write(explicit);
+    dos.writeFloat(loudness);
+    dos.writeUTF(release_date_string);
+    return baos.toByteArray();
+  }
+
+  // transforma um byte array em objeto
+  public void fromByteArray(byte[] ba) throws IOException, ParseException {
+    ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+    DataInputStream dis = new DataInputStream(bais);
+
+    id = dis.readUTF();
+    name = dis.readUTF();
+
+    // arrumar essa parte
+    ArrayList<String> artists_temp = new ArrayList<String>();
+    for(String artist : artists){
+      artists_temp.add(dis.readUTF());
+    }
+    artists = artists_temp;
+
+    duration_ms = dis.read();
+    explicit = dis.read();
+    loudness = dis.readFloat();
+
+    // converter string para data
+    String release_date_string = dis.readUTF();
+    release_date = new SimpleDateFormat("yyyy-MM-dd").parse(release_date_string);
+  }
+
+  public String toString(){
+    return 
+    "\nId: " + this.id +
+    "\nNome: " + this.name +
+    "\nArtistas: " + this.artists +
+    "\nDuração: " + String.format( "%03d:%02d", duration_ms / 3600000, ( duration_ms / 60000 ) % 60 ) + 
+    "\nExplicito: " + ((explicit == 1) ? 'S' : 'N') + 
+    "\nData de lançamento: " + release_date + 
+    "\nSonoridade: " + loudness;
+  }
 }
