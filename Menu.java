@@ -7,6 +7,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.*;
+import java.nio.charset.*;
 
 public class Menu {
   public static Scanner scan = new Scanner(System.in);
@@ -83,9 +85,7 @@ public class Menu {
     float loudness;
     Date release_date;
 
-    // & criar gerador de id &
-    // buscar o ultimo id e criar um novo a partir dele
-    id = "12345ABCDE"; // apenas para teste
+    id = geradorID();
 
     System.out.println("Nome da música: ");
     name = scan.nextLine();
@@ -113,6 +113,37 @@ public class Menu {
 
     Musica musica = new Musica(id, name, artists, duration_ms, explicit, loudness, release_date);
     return musica;
+  }
+
+  /*
+   * Código retirado de: https://acervolima.com/gerar-string-aleatoria-de-determinado-tamanho-em-java/
+   */
+  private static String geradorID(){
+    int n = 23; 
+    // length is bounded by 256 Character
+    byte[] array = new byte[256];
+    new Random().nextBytes(array);
+
+    String randomString = new String(array, Charset.forName("UTF-8"));
+
+    // Create a StringBuffer to store the result
+    StringBuffer r = new StringBuffer();
+
+    // remove all spacial char
+    String  AlphaNumericString = randomString.replaceAll("[^A-Za-z0-9]", "");
+
+    // Append first 20 alphanumeric characters
+    // from the generated random String into the result
+    for (int k = 0; k < AlphaNumericString.length(); k++) {
+
+        if (Character.isLetter(AlphaNumericString.charAt(k)) && (n > 0) || Character.isDigit(AlphaNumericString.charAt(k)) && (n > 0)) {
+            r.append(AlphaNumericString.charAt(k));
+            n--;
+        }
+    }
+
+    // return the resultant string
+    return r.toString();
   }
 
   private static Musica menuUpdate() throws ParseException {
