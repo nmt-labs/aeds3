@@ -80,13 +80,15 @@ public class Menu {
 
   private static Musica menuCreate() throws ParseException {
     
-    String name, artistsString, dataString;
+    String name, key, artistsString, dataString;
     ArrayList<String> artists = new ArrayList<String>();
     int id, duration_ms, explicit;
     float tempo;
     Date release_date;
 
     id = ultimoId();
+
+    key = geradorKey();
 
     System.out.println("Nome da música: ");
     name = scan.nextLine();
@@ -112,7 +114,7 @@ public class Menu {
     SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
     release_date = formato.parse(dataString);
 
-    Musica musica = new Musica(id, name, artists, duration_ms, explicit, tempo, release_date);
+    Musica musica = new Musica(id, key, name, artists, duration_ms, explicit, tempo, release_date);
     return musica;
   }
 
@@ -134,9 +136,40 @@ public class Menu {
     }
   }
 
+  /*
+   * Código retirado de: https://acervolima.com/gerar-string-aleatoria-de-determinado-tamanho-em-java/
+   */
+  private static String geradorKey(){
+    int n = 23; 
+    // length is bounded by 256 Character
+    byte[] array = new byte[256];
+    new Random().nextBytes(array);
+
+    String randomString = new String(array, Charset.forName("UTF-8"));
+
+    // Create a StringBuffer to store the result
+    StringBuffer r = new StringBuffer();
+
+    // remove all spacial char
+    String  AlphaNumericString = randomString.replaceAll("[^A-Za-z0-9]", "");
+
+    // Append first 20 alphanumeric characters
+    // from the generated random String into the result
+    for (int k = 0; k < AlphaNumericString.length(); k++) {
+
+        if (Character.isLetter(AlphaNumericString.charAt(k)) && (n > 0) || Character.isDigit(AlphaNumericString.charAt(k)) && (n > 0)) {
+            r.append(AlphaNumericString.charAt(k));
+            n--;
+        }
+    }
+
+    // return the resultant string
+    return r.toString();
+  }
+
   private static Musica menuUpdate() throws ParseException {
     
-    String name, artistsString, dataString;
+    String name, key, artistsString, dataString;
     ArrayList<String> artists = new ArrayList<String>();
     int id, duration_ms, explicit, op;
     float tempo;

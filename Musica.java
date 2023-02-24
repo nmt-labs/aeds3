@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.io.DataOutputStream;
 
 public class Musica {
-  protected String name;
+  protected String name, key;
   protected ArrayList<String> artists;
   protected int id, duration_ms, explicit;
   protected float tempo;
@@ -21,15 +21,16 @@ public class Musica {
 
   // constructors
   public Musica (){
-    this.name = null;
+    this.name = this.key = null;
     this.artists = new ArrayList<String>();
     this.id = this.duration_ms = this.explicit = -1;
     this.tempo = -1;
     this.release_date = null;
   }
 
-  public Musica (int id, String name, ArrayList<String> artists, int duration_ms, int explicit, float tempo, Date release_date) {
+  public Musica (int id, String key, String name, ArrayList<String> artists, int duration_ms, int explicit, float tempo, Date release_date) {
     this.id = id;
+    this.key = key;
     this.name = name;
     this.artists = artists;
     this.duration_ms = duration_ms;
@@ -40,6 +41,7 @@ public class Musica {
 
   // sets
   public void setId(int id) { this.id = id; }
+  public void setKey(String key) { this.key = key; }
   public void setName(String name) { this.name = name; }
   public void setArtists(ArrayList<String> artists) { this.artists = artists; }
   public void setDuration_ms(int duration_ms) { this.duration_ms = duration_ms; }
@@ -49,6 +51,7 @@ public class Musica {
 
   // gets
   public int getId() { return id; }
+  public String getKey() { return key; }
   public String getName() { return name; }
   public ArrayList<String> getArtists() { return artists; }
   public int getDuration_ms() { return duration_ms; }
@@ -68,6 +71,7 @@ public class Musica {
     String release_date_string = date_format.format(release_date);
 
     dos.write(id);
+    dos.writeUTF(key);
     dos.writeUTF(name);
     for(String artist : artists){
       dos.writeUTF(artist);
@@ -85,6 +89,7 @@ public class Musica {
     DataInputStream dis = new DataInputStream(bais);
 
     id = dis.read();
+    key = dis.readUTF();
     name = dis.readUTF();
 
     while (dis.available() > 0) {
@@ -103,6 +108,7 @@ public class Musica {
   public String toString(){
     return 
     "\nId: " + this.id +
+    "\nKey: " + this.key +
     "\nNome: " + this.name +
     "\nArtistas: " + this.artists +
     "\nDuração: " + String.format( "%03d:%02d", duration_ms / 3600000, ( duration_ms / 60000 ) % 60 ) + 
