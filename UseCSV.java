@@ -66,7 +66,7 @@ public class UseCSV {
 
         Musica musica = new Musica(id, key, name, artists, duration_ms, explicit, tempo, release_date);
         // & insere no db &
-        System.out.println(musica.toString());
+        // System.out.println(musica.toString());
         line = br.readLine();
     }
     br.close();
