@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.charset.*;
 
 public class Menu {
@@ -16,8 +18,7 @@ public class Menu {
     int op = -1;
 
     System.out.println("-------------------------------------------------------------");
-    System.out.println("|                      SPOTIFY SEARCH                       |");
-    System.out.println("|                  Músicas de 1921 a 2020                   |");
+    System.out.println("|                      SPOTIFY DATASET                      |");
     System.out.println("-------------------------------------------------------------");
 
     while (op != 0){
@@ -39,7 +40,7 @@ public class Menu {
 
   private static void menu(int op) throws ParseException {
     Musica musica = new Musica();
-    String nome;
+    int id;
     
     switch(op){
       case 1:
@@ -49,8 +50,8 @@ public class Menu {
         break;
       case 2:
       // read
-        System.out.println("Digite o nome da música:");
-        nome = scan.nextLine();
+        System.out.println("Digite o ID da música:");
+        id = scan.nextInt();
         // & buscar &
         if (musica != null) {
             System.out.println("Música:\n" + musica.toString());
@@ -65,8 +66,8 @@ public class Menu {
         break;
       case 4:
       // delete
-        System.out.println("Digite o nome da música:");
-        nome = scan.nextLine();
+        System.out.println("Digite o ID da música:");
+        id = scan.nextInt();
         // & deletar &
         if (deletado) {
             System.out.println("Deletado com sucesso!");
@@ -79,13 +80,13 @@ public class Menu {
 
   private static Musica menuCreate() throws ParseException {
     
-    String id, name, artistsString, dataString;
+    String name, artistsString, dataString;
     ArrayList<String> artists = new ArrayList<String>();
-    int duration_ms, explicit;
-    float loudness;
+    int id, duration_ms, explicit;
+    float tempo;
     Date release_date;
 
-    id = geradorID();
+    id = ultimoId();
 
     System.out.println("Nome da música: ");
     name = scan.nextLine();
@@ -104,60 +105,47 @@ public class Menu {
     explicit = scan.nextLine() == "S" ? 1 : 0;
 
     System.out.println("Sonoridade: ");
-    loudness = scan.nextFloat();
+    tempo = scan.nextFloat();
 
     System.out.println("Data de lançamento (dd/mm/aaaa): ");
     dataString = scan.nextLine();
     SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
     release_date = formato.parse(dataString);
 
-    Musica musica = new Musica(id, name, artists, duration_ms, explicit, loudness, release_date);
+    Musica musica = new Musica(id, name, artists, duration_ms, explicit, tempo, release_date);
     return musica;
   }
 
-  /*
-   * Código retirado de: https://acervolima.com/gerar-string-aleatoria-de-determinado-tamanho-em-java/
-   */
-  private static String geradorID(){
-    int n = 23; 
-    // length is bounded by 256 Character
-    byte[] array = new byte[256];
-    new Random().nextBytes(array);
+  // encontra o ultimo id e cria um novo
+  private static int ultimoId() {
+    RandomAccessFile arquivo;
+    int ultimoId;
+    try {
+      arquivo = new RandomAccessFile("musicas.db", "rw");
+      ultimoId = arquivo.readInt();
+      arquivo.close();
+      ultimoId++;
 
-    String randomString = new String(array, Charset.forName("UTF-8"));
+      return ultimoId;
+    } catch (IOException e) {
+      System.out.println("Criando novo arquivo");
 
-    // Create a StringBuffer to store the result
-    StringBuffer r = new StringBuffer();
-
-    // remove all spacial char
-    String  AlphaNumericString = randomString.replaceAll("[^A-Za-z0-9]", "");
-
-    // Append first 20 alphanumeric characters
-    // from the generated random String into the result
-    for (int k = 0; k < AlphaNumericString.length(); k++) {
-
-        if (Character.isLetter(AlphaNumericString.charAt(k)) && (n > 0) || Character.isDigit(AlphaNumericString.charAt(k)) && (n > 0)) {
-            r.append(AlphaNumericString.charAt(k));
-            n--;
-        }
+      return 0;
     }
-
-    // return the resultant string
-    return r.toString();
   }
 
   private static Musica menuUpdate() throws ParseException {
     
-    String id, name, artistsString, dataString;
+    String name, artistsString, dataString;
     ArrayList<String> artists = new ArrayList<String>();
-    int duration_ms, explicit, op;
-    float loudness;
+    int id, duration_ms, explicit, op;
+    float tempo;
     Date release_date;
 
     Musica musica;
 
-    System.out.println("Insira o nome da música para alteração: ");
-    name = scan.nextLine();
+    System.out.println("Insira o id da música para alteração: ");
+    id = scan.nextInt();
     // & musica = busca &;
     // & if achar executar menu abaixo &
     musica = new Musica(); //apenas para teste
@@ -167,7 +155,7 @@ public class Menu {
     System.out.println("2- Artistas");
     System.out.println("3- Duração");
     System.out.println("4- Explicita");
-    System.out.println("5- Sonoridade");
+    System.out.println("5- Tempo");
     System.out.println("6- Data de lançamento");
     System.out.println("Insira sua opção: ");
     op = scan.nextInt();
@@ -202,10 +190,10 @@ public class Menu {
         musica.setExplicit(explicit);
         break;
       case 5:
-        System.out.println("Insira nova sonoridade: ");
-        loudness = scan.nextFloat();
+        System.out.println("Insira novo tempo: ");
+        tempo = scan.nextFloat();
 
-        musica.setLoudness(loudness);
+        musica.setTempo(tempo);
         break;
       case 6:
         System.out.println("Insira nova data de lançamento (dd/mm/aaaa): ");
