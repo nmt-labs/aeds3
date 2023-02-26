@@ -1,7 +1,5 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,7 +13,7 @@ public class UseCSV {
     line = "";
   }
 
-  public void readArq() throws IOException, ParseException{
+  public void readArq() throws Exception{
 
     String name, key;
     ArrayList<String> artists;
@@ -64,8 +62,9 @@ public class UseCSV {
         String tempo_string = field[7].replace(',', '.');
         tempo = Double.parseDouble(tempo_string);
 
+        Crud crud = new Crud();
         Musica musica = new Musica(id, key, name, artists, duration_ms, explicit, tempo, release_date);
-        // & insere no db &
+        crud.create(musica);
         // System.out.println(musica.toString());
         line = br.readLine();
     }
