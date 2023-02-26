@@ -60,11 +60,15 @@ public class Menu {
             System.out.println("Nenhuma música localizada");
         }
         break;
-      // case 3:
-      // // update
-      //   musica = menuUpdate();
-      //   // & alterar musica na base de dados &
-      //   break;
+      case 3:
+      // update
+        musica = menuUpdate();
+        if(crud.update(musica)) {
+          System.out.println("Música atualizada com sucesso!");
+        } else {
+          System.out.println("Erro ao atualizar");
+        }
+        break;
       case 4:
       // delete
         System.out.println("Digite o ID da música:");
@@ -168,78 +172,81 @@ public class Menu {
     return r.toString();
   }
 
-  // private static Musica menuUpdate() throws ParseException {
+  private static Musica menuUpdate() throws Exception {
     
-  //   String name, key, artistsString, dataString;
-  //   ArrayList<String> artists = new ArrayList<String>();
-  //   int id, duration_ms, explicit, op;
-  //   float tempo;
-  //   Date release_date;
+    String name, artistsString, dataString;
+    ArrayList<String> artists = new ArrayList<String>();
+    int id, duration_ms, explicit, op;
+    float tempo;
+    Date release_date;
 
-  //   Musica musica;
+    Crud crud = new Crud();
+    Musica musica;
 
-  //   System.out.println("Insira o id da música para alteração: ");
-  //   id = scan.nextInt();
-  //   // & musica = busca &;
-  //   // & if achar executar menu abaixo &
-  //   musica = new Musica(); //apenas para teste
+    System.out.println("Insira o id da música para alteração: ");
+    id = scan.nextInt();
+    musica = crud.read(id);
 
-  //   System.out.println("Selecione o que será alterado: ");
-  //   System.out.println("1- Nome");
-  //   System.out.println("2- Artistas");
-  //   System.out.println("3- Duração");
-  //   System.out.println("4- Explicita");
-  //   System.out.println("5- Tempo");
-  //   System.out.println("6- Data de lançamento");
-  //   System.out.println("Insira sua opção: ");
-  //   op = scan.nextInt();
+    if (musica != null){
+      System.out.println("Selecione o que será alterado: ");
+      System.out.println("1- Nome");
+      System.out.println("2- Artistas");
+      System.out.println("3- Duração");
+      System.out.println("4- Explicita");
+      System.out.println("5- Tempo");
+      System.out.println("6- Data de lançamento");
+      System.out.println("Insira sua opção: ");
+      op = scan.nextInt();
 
-  //   switch(op){
-  //     case 1:
-  //       System.out.println("Insira novo nome: ");
-  //       name = scan.nextLine();
+      switch(op){
+        case 1:
+          System.out.println("Insira novo nome: ");
+          name = scan.nextLine();
 
-  //       musica.setName(name);
-  //       break;
-  //     case 2:
-  //       System.out.println("Insira novo(s) artistas (separados por vírgula): ");
-  //       artistsString = scan.nextLine();
-  //       String[] artistsSeparado = artistsString.split(",");
-  //       for(int i = 0; i < artistsSeparado.length; i++){
-  //         artists.add(scan.nextLine());
-  //       }
+          musica.setName(name);
+          break;
+        case 2:
+          System.out.println("Insira novo(s) artistas (separados por vírgula): ");
+          artistsString = scan.nextLine();
+          String[] artistsSeparado = artistsString.split(",");
+          for(int i = 0; i < artistsSeparado.length; i++){
+            artists.add(scan.nextLine());
+          }
 
-  //       musica.setArtists(artists);
-  //       break;
-  //     case 3:
-  //       System.out.println("Insira nova duração: ");
-  //       duration_ms = scan.nextInt();
+          musica.setArtists(artists);
+          break;
+        case 3:
+          System.out.println("Insira nova duração: ");
+          duration_ms = scan.nextInt();
 
-  //       musica.setDuration_ms(duration_ms);
-  //       break;
-  //     case 4:
-  //       System.out.println("Insira se é explicita (S ou N): ");
-  //       explicit = scan.nextLine() == "S" ? 1 : 0;
+          musica.setDuration_ms(duration_ms);
+          break;
+        case 4:
+          System.out.println("Insira se é explicita (S ou N): ");
+          explicit = scan.nextLine() == "S" ? 1 : 0;
 
-  //       musica.setExplicit(explicit);
-  //       break;
-  //     case 5:
-  //       System.out.println("Insira novo tempo: ");
-  //       tempo = scan.nextFloat();
+          musica.setExplicit(explicit);
+          break;
+        case 5:
+          System.out.println("Insira novo tempo: ");
+          tempo = scan.nextFloat();
 
-  //       musica.setTempo(tempo);
-  //       break;
-  //     case 6:
-  //       System.out.println("Insira nova data de lançamento (dd/mm/aaaa): ");
-  //       dataString = scan.nextLine();
-  //       SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-  //       release_date = formato.parse(dataString);
+          musica.setTempo(tempo);
+          break;
+        case 6:
+          System.out.println("Insira nova data de lançamento (dd/mm/aaaa): ");
+          dataString = scan.nextLine();
+          SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+          release_date = formato.parse(dataString);
 
-  //       musica.setRelease_date(release_date);
-  //       break;
-  //   }
+          musica.setRelease_date(release_date);
+          break;
+      }
 
-  //   // & else -> musica nao encontrada &
-  //   return musica;
-  // }
+      return musica;
+    } else {
+      System.out.println("Musica nao encontrada");
+      return null;
+    }
+  }
 }

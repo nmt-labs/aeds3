@@ -55,6 +55,49 @@ public class Crud {
     return null;
   }
 
+  // Método de inserção no arquivo
+  public boolean update(Musica musica) throws Exception {
+    arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
+    byte[] ba;
+    byte[] newBa;
+    int tamanho;
+    Byte lapide = arquivo.readByte();
+    long posicao;
+    Musica musicaArq = new Musica();
+
+    arquivo.seek(4); // move ponteiro para o primeiro registro
+    while (arquivo.getFilePointer() != arquivo.length()) {
+      posicao = arquivo.getFilePointer(); // posicao atual do ponteiro no arquivo
+      tamanho = arquivo.readInt();
+      ba = new byte[tamanho];
+      arquivo.read(ba);
+      if (lapide != '*') {
+        musicaArq.fromByteArray(ba); // le a musica do arquivo
+        if (musicaArq.getId() == musica.getId()) {
+          newBa = musica.toByteArray();
+          if (newBa.length <= tamanho) { // se for menor que o registro anterior, sobrescreve
+              arquivo.seek(posicao + 6);
+              arquivo.write(newBa);
+
+              arquivo.close();
+              return true;
+          } else { // senao, escreve no fim do arquivo e deleta o anterior
+              arquivo.seek(arquivo.length());
+              arquivo.writeChar(' ');
+              arquivo.writeInt(newBa.length);
+              arquivo.write(newBa);
+              delete(musicaArq.getId());
+
+              arquivo.close();
+              return true;
+          }
+        }
+      }
+    }
+    arquivo.close();
+    return false;
+  }
+
   // Método de exclusão do arquivo
   public Musica delete(int id) throws Exception {
     arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
@@ -72,11 +115,12 @@ public class Crud {
       arquivo.read(ba);
       if (lapide != '*') {
         musica.fromByteArray(ba);
-        if (musica.getId() == id)
-        arquivo.seek(posicao); // volta para a posicao inicial do registro
-        arquivo.writeChar('*'); // marca a lapide
-        arquivo.close();
-        return musica;
+        if (musica.getId() == id){
+          arquivo.seek(posicao); // volta para a posicao inicial do registro
+          arquivo.writeChar('*'); // marca a lapide
+          arquivo.close();
+          return musica;
+        }
       }
     }
 
