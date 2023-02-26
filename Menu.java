@@ -65,17 +65,17 @@ public class Menu {
       //   musica = menuUpdate();
       //   // & alterar musica na base de dados &
       //   break;
-      // case 4:
-      // // delete
-      //   System.out.println("Digite o ID da música:");
-      //   id = scan.nextInt();
-      //   // & deletar &
-      //   if (deletado) {
-      //       System.out.println("Deletado com sucesso!");
-      //   } else {
-      //       System.err.println("Música não encontrada");
-      //   }
-      //   break;
+      case 4:
+      // delete
+        System.out.println("Digite o ID da música:");
+        id = scan.nextInt();
+        musica = crud.delete(id);
+        if (musica != null) {
+            System.out.println("Música de id " + musica.getId() + " deletada com sucesso!");
+        } else {
+            System.err.println("Música não encontrada");
+        }
+        break;
     }
   }
 
