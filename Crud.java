@@ -19,23 +19,17 @@ public class Crud {
         try {
             arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
 
+            byte[] ba = musica.toByteArray(); // converte musica para byte
             arquivo.seek(0); // move ponteiro para o inicio do arquivo
-            // int ultimoId = file.readInt();// le ultimo id
-            // int novoId = ultimoId + 1;// incrementa id
-            arquivo.seek(0);// mover ponteiro para o inicio do arquivo
-            // file.writeInt(novoId);// escrever objeto.id
-
-            // criar registro
-
+            arquivo.writeInt(musica.getId()); // escreve id da ultima muisca no inicio do arquivo
             arquivo.seek(arquivo.length());// mover para o fim do arquivo
 
             // escrever registro
-            // musica.setId(novoId);
-            byte[] ba = musica.toByteArray();
             arquivo.writeByte(' '); // escreve a lápide
-            arquivo.writeInt(ba.length);
-            arquivo.writeShort((short) ba.length);
+            arquivo.writeInt(ba.length); // escreve tamanho do registro
             arquivo.write(ba);
+
+            arquivo.close();
 
             System.out.println("Música adicionada com sucesso! Seu id é " + musica.getId());
         } catch (IOException e) {
