@@ -7,10 +7,17 @@ public class Crud {
   private RandomAccessFile arquivo;
 
   public Crud() {
+    try {
       boolean verificaArquivo = (new File(nomeDoArquivo)).exists();
-      if (!verificaArquivo) { // talvez criar o arquivo caso ele nao exista
-          System.out.print("Arquivo não existe!");
+      if (!verificaArquivo){
+        try { // força o primeiro registro a ter id 0
+          int id = -1;
+          arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
+          arquivo.writeInt(id);
+          arquivo.close();
+        } catch (Exception e){System.out.println(e.getMessage() + "erro em criar o id");}
       }
+    }catch(Exception e){System.out.println(e.getMessage());}
   }
 
   // Método de inserção no arquivo

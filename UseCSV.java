@@ -4,11 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class UseCSV {
+class UseCSVReader {
   private String arq;
   private String line;
 
-  public UseCSV(){
+  public UseCSVReader(){
     arq = "spotifydb.csv";
     line = "";
   }
@@ -69,5 +69,12 @@ public class UseCSV {
         line = br.readLine();
     }
     br.close();
+  }
+}
+
+public class UseCSV {
+  public static void main(String[] args) throws Exception {
+    UseCSVReader csv = new UseCSVReader();
+    csv.readArq();
   }
 }
