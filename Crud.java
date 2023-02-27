@@ -42,13 +42,15 @@ public class Crud {
   public Musica read(int id) throws Exception {
     arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
     byte[] ba;
-    int tamanho = arquivo.readInt();
-    char lapide = arquivo.readChar();
+    int tamanho;
+    char lapide;
     Musica musica = new Musica();
     
     arquivo.seek(4); // move ponteiro para o primeiro registro
-    while (arquivo.getFilePointer() != arquivo.length()) {
-      arquivo.seek(arquivo.getFilePointer() + 1);
+    while (arquivo.getFilePointer() < arquivo.length()) {
+      //arquivo.seek(arquivo.getFilePointer() + 1);
+      lapide = arquivo.readChar();
+      tamanho = arquivo.readInt();
       ba = new byte[tamanho];
       arquivo.read(ba);
       if (lapide != '*') {
@@ -68,13 +70,14 @@ public class Crud {
     byte[] ba;
     byte[] newBa;
     int tamanho;
-    char lapide = arquivo.readChar();
+    char lapide;
     long posicao;
     Musica musicaArq = new Musica();
 
     arquivo.seek(4); // move ponteiro para o primeiro registro
-    while (arquivo.getFilePointer() != arquivo.length()) {
+    while (arquivo.getFilePointer() < arquivo.length()) {
       posicao = arquivo.getFilePointer(); // posicao atual do ponteiro no arquivo
+      lapide = arquivo.readChar();
       tamanho = arquivo.readInt();
       ba = new byte[tamanho];
       arquivo.read(ba);
@@ -110,13 +113,14 @@ public class Crud {
     arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
     byte[] ba;
     int tamanho;
-    char lapide = arquivo.readChar();
+    char lapide;
     long posicao;
     Musica musica = new Musica();
 
     arquivo.seek(4); // move ponteiro para o primeiro registro
-    while (arquivo.getFilePointer() != arquivo.length()) {
+    while (arquivo.getFilePointer() < arquivo.length()) {
       posicao = arquivo.getFilePointer(); // posicao atual do ponteiro no arquivo
+      lapide = arquivo.readChar();
       tamanho = arquivo.readInt();
       ba = new byte[tamanho];
       arquivo.read(ba);
