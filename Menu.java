@@ -113,7 +113,8 @@ public class Menu {
     
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("É explicita? (SIM ou NAO): ");
-    explicit = (scan.nextLine() == "SIM") ? 1 : 0;
+    String linha = scan.nextLine();
+    explicit = (linha.equals("SIM")) ? 1 : 0;
     
     System.out.println("Tempo: ");
     tempo = scan.nextDouble();
@@ -228,9 +229,9 @@ public class Menu {
           musica.setDuration_ms(duration_ms);
           break;
         case 4:
-        System.out.println("É explicita? (SIM ou NAO): ");
-        String sn = scan.nextLine();
-        explicit = (sn == "SIM") ? 1 : 0;
+          System.out.println("É explicita? (SIM ou NAO): ");
+          String linha = scan.nextLine();
+          explicit = (linha.equals("SIM")) ? 1 : 0;
 
           musica.setExplicit(explicit);
           break;
