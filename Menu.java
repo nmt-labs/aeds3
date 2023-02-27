@@ -54,7 +54,7 @@ public class Menu {
       // read
         System.out.println("Digite o ID da música:");
         id = scan.nextInt();
-        musica = crud.read(id);
+        musica = crud.read(id); //erro
         if (musica != null) {
             System.out.println(musica.toString());
         } else {
@@ -111,10 +111,10 @@ public class Menu {
     duration_ms = scan.nextInt();
 
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
-    System.out.println("É explicita? (S ou N): ");
-    explicit = scan.nextLine() == "S" ? 1 : 0;
+    System.out.println("É explicita? (SIM ou NAO): ");
+    explicit = (scan.nextLine() == "SIM") ? 1 : 0;
 
-    System.out.println("Sonoridade: ");
+    System.out.println("Tempo: ");
     tempo = scan.nextDouble();
 
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
@@ -190,7 +190,7 @@ public class Menu {
     System.out.println("Insira o id da música para alteração: ");
     id = scan.nextInt();
     musica = crud.read(id);
-
+    
     if (musica != null){
       System.out.println("Selecione o que será alterado: ");
       System.out.println("1- Nome");
@@ -201,7 +201,8 @@ public class Menu {
       System.out.println("6- Data de lançamento");
       System.out.println("Insira sua opção: ");
       op = scan.nextInt();
-
+      scan.nextLine(); // erro do nextInt()
+      
       switch(op){
         case 1:
           System.out.println("Insira novo nome: ");
@@ -214,7 +215,7 @@ public class Menu {
           artistsString = scan.nextLine();
           String[] artistsSeparado = artistsString.split(",");
           for(int i = 0; i < artistsSeparado.length; i++){
-            artists.add(scan.nextLine());
+            artists.add(artistsSeparado[i]);
           }
 
           musica.setArtists(artists);
@@ -226,8 +227,9 @@ public class Menu {
           musica.setDuration_ms(duration_ms);
           break;
         case 4:
-          System.out.println("Insira se é explicita (S ou N): ");
-          explicit = scan.nextLine() == "S" ? 1 : 0;
+        System.out.println("É explicita? (SIM ou NAO): ");
+        String sn = scan.nextLine();
+        explicit = (sn == "SIM") ? 1 : 0;
 
           musica.setExplicit(explicit);
           break;
