@@ -93,7 +93,6 @@ public class Musica {
     this.name = dis.readUTF(); 
     this.duration_ms = dis.readInt();
     this.explicit = dis.readInt();
-    System.out.println(this.name);
     
     int artists_length = dis.readInt();
     for(int i = 0; i < artists_length; i++) {
@@ -114,9 +113,9 @@ public class Musica {
     "\nKey: " + this.key +
     "\nNome: " + this.name +
     "\nArtistas: " + this.artists +
-    "\nDuração: " + String.format( "%03d:%02d", duration_ms / 3600000, ( duration_ms / 60000 ) % 60 ) + 
-    "\nExplicito: " + ((explicit == 1) ? 'S' : 'N') + 
+    "\nDuração: " + this.duration_ms + " ms" + 
+    "\nExplicito: " + ((explicit == 1) ? "SIM" : "NAO") + 
     "\nData de lançamento: " + release_date + 
-    "\nSonoridade: " + tempo;
+    "\nTempo: " + tempo;
   }
 }
