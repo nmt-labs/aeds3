@@ -65,7 +65,7 @@ public class Musica {
     DataOutputStream dos = new DataOutputStream(baos);
 
     // converter data para string
-    DateFormat date_format = new SimpleDateFormat("yyyy-mm-dd");
+    DateFormat date_format = new SimpleDateFormat("yyyy-MM-dd");
     String release_date_string = date_format.format(this.release_date);
 
     dos.writeInt(this.id);
@@ -87,6 +87,7 @@ public class Musica {
   public void fromByteArray(byte[] ba) throws IOException, ParseException {
     ByteArrayInputStream bais = new ByteArrayInputStream(ba);
     DataInputStream dis = new DataInputStream(bais);
+    artists.clear(); // limpar o array
 
     this.id = dis.readInt();
     this.key = dis.readUTF(); 
@@ -97,7 +98,7 @@ public class Musica {
     int artists_length = dis.readInt();
     for(int i = 0; i < artists_length; i++) {
       dis.readInt();
-      artists.add(dis.readUTF());
+      this.artists.add(dis.readUTF());
     }
     
     // converter string para data
@@ -108,6 +109,9 @@ public class Musica {
   }
 
   public String toString(){
+    DateFormat date_format = new SimpleDateFormat("dd/MM/yyyy");
+    String release_date_string = date_format.format(this.release_date);
+    
     return 
     "\nId: " + this.id +
     "\nKey: " + this.key +
@@ -115,7 +119,7 @@ public class Musica {
     "\nArtistas: " + this.artists +
     "\nDuração: " + this.duration_ms + " ms" + 
     "\nExplicito: " + ((explicit == 1) ? "SIM" : "NAO") + 
-    "\nData de lançamento: " + release_date + 
+    "\nData de lançamento: " + release_date_string + 
     "\nTempo: " + tempo;
   }
 }

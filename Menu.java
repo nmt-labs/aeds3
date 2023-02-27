@@ -47,7 +47,7 @@ public class Menu {
       case 1:
       // create
         musica = menuCreate();
-        musica.toString();
+        System.out.println(musica.toString());
         crud.create(musica);
         break;
       case 2:
@@ -92,37 +92,38 @@ public class Menu {
     double tempo;
     Date release_date;
 
+    
     id = ultimoId();
-
+    
     key = geradorKey();
-
+    
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("Nome da música: ");
     name = scan.nextLine();
-
+    
     System.out.println("Artistas (separados por virgula): ");
     artistsString = scan.nextLine();
     String[] artistsSeparado = artistsString.split(",");
     for(int i = 0; i < artistsSeparado.length; i++){
       artists.add(artistsSeparado[i]);
     }
-
+    
     System.out.println("Duração (ms): ");
     duration_ms = scan.nextInt();
-
+    
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("É explicita? (SIM ou NAO): ");
     explicit = (scan.nextLine() == "SIM") ? 1 : 0;
-
+    
     System.out.println("Tempo: ");
     tempo = scan.nextDouble();
-
+    
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("Data de lançamento (dd/mm/aaaa): ");
     dataString = scan.nextLine();
     SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
     release_date = formato.parse(dataString);
-
+    
     Musica musica = new Musica(id, key, name, artists, duration_ms, explicit, tempo, release_date);
     return musica;
   }

@@ -48,13 +48,12 @@ public class Crud {
     
     arquivo.seek(4); // move ponteiro para o primeiro registro
     while (arquivo.getFilePointer() < arquivo.length()) {
-      //arquivo.seek(arquivo.getFilePointer() + 1);
       lapide = arquivo.readChar();
       tamanho = arquivo.readInt();
       ba = new byte[tamanho];
       arquivo.read(ba);
       if (lapide != '*') {
-        musica.fromByteArray(ba); // erro aqui
+        musica.fromByteArray(ba);
         if (musica.getId() == id)
           return musica;
       }
