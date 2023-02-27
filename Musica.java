@@ -1,12 +1,10 @@
-/*
- * ainda precisa ser testado
- */
 import java.util.ArrayList;
 import java.util.Date;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -68,18 +66,20 @@ public class Musica {
 
     // converter data para string
     DateFormat date_format = new SimpleDateFormat("yyyy-mm-dd");
-    String release_date_string = date_format.format(release_date);
+    String release_date_string = date_format.format(this.release_date);
 
-    dos.write(id);
-    dos.writeUTF(key);
-    dos.writeUTF(name);
+    dos.writeInt(this.id);
+    dos.writeUTF(this.key);
+    dos.writeUTF(this.name);
+    dos.writeInt(this.duration_ms);
+    dos.writeInt(this.explicit);
+    dos.writeInt(artists.size());
     for(String artist : artists){
+      dos.writeInt(artist.getBytes(Charset.forName("UTF-8")).length); //tamanho da string atual
       dos.writeUTF(artist);
     }
-    dos.write(duration_ms);
-    dos.write(explicit);
-    dos.writeDouble(tempo);
     dos.writeUTF(release_date_string);
+    dos.writeDouble(this.tempo);
     return baos.toByteArray();
   }
 
@@ -88,21 +88,24 @@ public class Musica {
     ByteArrayInputStream bais = new ByteArrayInputStream(ba);
     DataInputStream dis = new DataInputStream(bais);
 
-    id = dis.read();
-    key = dis.readUTF();
-    name = dis.readUTF();
-
-    while (dis.available() > 0) {
+    this.id = dis.readInt();
+    this.key = dis.readUTF(); 
+    this.name = dis.readUTF(); 
+    this.duration_ms = dis.readInt();
+    this.explicit = dis.readInt();
+    System.out.println(this.name);
+    
+    int artists_length = dis.readInt();
+    for(int i = 0; i < artists_length; i++) {
+      dis.readInt();
       artists.add(dis.readUTF());
     }
-
-    duration_ms = dis.read();
-    explicit = dis.read();
-    tempo = dis.readDouble();
-
+    
     // converter string para data
     String release_date_string = dis.readUTF();
-    release_date = new SimpleDateFormat("yyyy-MM-dd").parse(release_date_string);
+    this.release_date = new SimpleDateFormat("yyyy-MM-dd").parse(release_date_string);
+    
+    this.tempo = dis.readDouble();
   }
 
   public String toString(){

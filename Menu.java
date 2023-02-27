@@ -47,6 +47,7 @@ public class Menu {
       case 1:
       // create
         musica = menuCreate();
+        musica.toString();
         crud.create(musica);
         break;
       case 2:
@@ -88,13 +89,14 @@ public class Menu {
     String name, key, artistsString, dataString;
     ArrayList<String> artists = new ArrayList<String>();
     int id, duration_ms, explicit;
-    float tempo;
+    double tempo;
     Date release_date;
 
     id = ultimoId();
 
     key = geradorKey();
 
+    scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("Nome da música: ");
     name = scan.nextLine();
 
@@ -102,18 +104,20 @@ public class Menu {
     artistsString = scan.nextLine();
     String[] artistsSeparado = artistsString.split(",");
     for(int i = 0; i < artistsSeparado.length; i++){
-      artists.add(scan.nextLine());
+      artists.add(artistsSeparado[i]);
     }
 
-    System.out.println("Duração: ");
+    System.out.println("Duração (ms): ");
     duration_ms = scan.nextInt();
 
+    scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("É explicita? (S ou N): ");
     explicit = scan.nextLine() == "S" ? 1 : 0;
 
     System.out.println("Sonoridade: ");
-    tempo = scan.nextFloat();
+    tempo = scan.nextDouble();
 
+    scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("Data de lançamento (dd/mm/aaaa): ");
     dataString = scan.nextLine();
     SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
@@ -145,7 +149,7 @@ public class Menu {
    * Código retirado de: https://acervolima.com/gerar-string-aleatoria-de-determinado-tamanho-em-java/
    */
   private static String geradorKey(){
-    int n = 23; 
+    int n = 22; 
     // length is bounded by 256 Character
     byte[] array = new byte[256];
     new Random().nextBytes(array);
