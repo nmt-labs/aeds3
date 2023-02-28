@@ -27,6 +27,7 @@ public class Menu {
       System.out.println("2- Procurar uma música");
       System.out.println("3- Alterar uma música");
       System.out.println("4- Excluir uma música");
+      System.out.println("5- Ordenar");
       System.out.println("0- Sair");
       System.out.println("Digite a opção: ");
       op = scan.nextInt();
@@ -80,6 +81,32 @@ public class Menu {
         } else {
             System.err.println("Música não encontrada");
         }
+        break;
+        case 5:
+        // ordenar
+          System.out.println("1 - Intercalação balanceada comum");
+          System.out.println("2 - Intercalação balanceada com blocos de tamanho variável");
+          System.out.println("3 - Intercalação balanceada com seleção por substituição");
+          op = scan.nextInt();
+
+          Ordenacao orderna = new Ordenacao();
+          switch (op){
+            case 1:
+            // comum
+              orderna.intercalacaoComum(op);
+            break;
+            case 2:
+            // blocos de tamanho variavel
+              orderna.intercalacaoComum(op);
+            break;
+            case 3:
+            // selecao por substuicao
+              orderna.intercalacaoComum(op);
+            break;
+            default: System.out.println("Opção inválida");
+            break;
+          }
+        
         break;
     }
   }
