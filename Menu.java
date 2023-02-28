@@ -1,12 +1,13 @@
-/*
- * & -> comando a ser criado
- */
-
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import ExternalSort.IntercalacaoComum;
+import ExternalSort.IntercalacaoVariavel;
+import ExternalSort.Selecao;
+
 import java.util.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -89,19 +90,18 @@ public class Menu {
           System.out.println("3 - Intercalação balanceada com seleção por substituição");
           op = scan.nextInt();
 
-          Ordenacao orderna = new Ordenacao();
           switch (op){
             case 1:
             // comum
-              orderna.intercalacaoComum(op);
+              IntercalacaoComum intComum = new IntercalacaoComum();
             break;
             case 2:
             // blocos de tamanho variavel
-              orderna.intercalacaoComum(op);
+              IntercalacaoVariavel intVariavel = new IntercalacaoVariavel();
             break;
             case 3:
             // selecao por substuicao
-              orderna.intercalacaoComum(op);
+              Selecao selecao = new Selecao();
             break;
             default: System.out.println("Opção inválida");
             break;
