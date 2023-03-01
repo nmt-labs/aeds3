@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import Musica.Musica;
+
 public class IntercalacaoComum {
   private String nomeArquivo;
   private RandomAccessFile arquivo;

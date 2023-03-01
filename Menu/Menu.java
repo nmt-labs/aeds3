@@ -1,3 +1,4 @@
+package Menu;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,6 +8,8 @@ import java.util.Scanner;
 import ExternalSort.IntercalacaoComum;
 import ExternalSort.IntercalacaoVariavel;
 import ExternalSort.Selecao;
+import Musica.Crud;
+import Musica.Musica;
 
 import java.util.*;
 import java.io.IOException;
