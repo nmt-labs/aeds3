@@ -16,7 +16,7 @@ import Musica.Musica;
 public class IntercalacaoComum {
   private String nomeArquivo = "db/musicas.db";
   private RandomAccessFile arquivo;
-  private int qntArquivos, tamBloco, ultimoId;
+  private int qntArquivos, tamBloco, ultimoId, numPrimRead;
   private RandomAccessFile[] saidaTemporaria, entradaTemporaria;
   private List<Musica> registros;
 
@@ -42,9 +42,10 @@ public class IntercalacaoComum {
   private void distribuir() throws Exception{
     // ler o id do inicio do arquivo
     this.ultimoId = arquivo.readInt();
+    numPrimRead = 0;
 
     iniciarSaidaTemps(); // apenas cria os arquivos temporarios
-    int indexInsercao = 0;
+    int index = 0;
     registros = new ArrayList<>(tamBloco); // array para ordenar os arquivos na memoria primaria
 
     while (!isAvaliable()) { // enquanto o arquivo nao termina
@@ -52,11 +53,11 @@ public class IntercalacaoComum {
       lerRegistros();
       Collections.sort(registros, Comparator.comparing(Musica::getName)); // ordena bloco em memoria primaria
       for (Musica musica : registros) { // escreve no arquivo temporario
-          saidaTemporaria[indexInsercao].writeChar(' ');
-          saidaTemporaria[indexInsercao].writeInt(musica.toByteArray().length);
-          saidaTemporaria[indexInsercao].write(musica.toByteArray());
+          saidaTemporaria[index].writeChar(' ');
+          saidaTemporaria[index].writeInt(musica.toByteArray().length);
+          saidaTemporaria[index].write(musica.toByteArray());
       }
-      indexInsercao = (indexInsercao + 1) % qntArquivos; // seleciona o proximo arquivo a armazenar o bloco
+      index = (index + 1) % qntArquivos; // seleciona o proximo arquivo a armazenar o bloco
     }
     finalizarSaidaTmp();
     arquivo.close();
@@ -64,7 +65,7 @@ public class IntercalacaoComum {
   }
 
   private void intercalar(){
-    
+
   }
   
   // -------------------------------------- utilitarios ----------------------------------------
@@ -81,7 +82,7 @@ public class IntercalacaoComum {
   private void iniciarSaidaTemps() {
     try {
       for (int i = 0; i < qntArquivos; i++) {
-        saidaTemporaria[i] = new RandomAccessFile("db/arqTemp/saidaTemp" + i + ".db", "rw");
+        saidaTemporaria[i] = new RandomAccessFile("db/arqTemp/saidaTemp" + (i + numPrimRead) + ".db", "rw");
       }
     } catch (IOException e) {
       System.err.println("Falha ao iniciar arquivos temporários");
