@@ -18,13 +18,15 @@ public class IntercalacaoComum {
   private String nomeArquivo = "db/musicas.db";
   private RandomAccessFile arquivo;
   private int qntArquivos, tamBloco, ultimoId;
-  private RandomAccessFile[] saidaTemporaria;
+  private RandomAccessFile[] saidaTemporaria, entradaTemporaria;
   private List<Musica> registros;
 
   public IntercalacaoComum(int qntArquivos, int tamBloco) throws FileNotFoundException{
     arquivo = new RandomAccessFile(nomeArquivo, "rw");
     this.qntArquivos = qntArquivos;
     this.tamBloco = tamBloco;
+    this.entradaTemporaria = new RandomAccessFile[qntArquivos];
+    this.saidaTemporaria = new RandomAccessFile[qntArquivos];
   }
 
   public void ordenar() throws Exception{
