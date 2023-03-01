@@ -3,31 +3,36 @@
  */
 package ExternalSort;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import Musica.Musica;
 
 public class IntercalacaoComum {
-  private String nomeArquivo;
+  private String nomeArquivo = "db/musicas.db";
   private RandomAccessFile arquivo;
   private int qntArquivos, tamBloco, ultimoId;
   private RandomAccessFile[] saidaTemporaria;
   private List<Musica> registros;
 
-  public IntercalacaoComum(String nomeArquivo, int qntArquivos, int tamBloco){
-    this.nomeArquivo = nomeArquivo;
+  public IntercalacaoComum(int qntArquivos, int tamBloco) throws FileNotFoundException{
+    arquivo = new RandomAccessFile(nomeArquivo, "rw");
     this.qntArquivos = qntArquivos;
     this.tamBloco = tamBloco;
   }
 
   public void ordenar() throws Exception{
     // distribui os registros nos arquivos temporarios
+    System.out.println("Distribuindo arquivo em arquivos temporarios...");
     distribuir();
     // intercala os arquivos temporarios
+    System.out.println("Intercalando arquivos temporarios...");
     intercalar();
 
     System.out.println("Arquivo ordenado!");
@@ -44,20 +49,19 @@ public class IntercalacaoComum {
     while (!isAvaliable()) { // enquanto o arquivo nao termina
       registros.clear();
       lerRegistros();
-      // Collections.sort(registros); // ordena bloco em memoria primaria
-      for (Musica item : registros) { // escreve no arquivo temporario
+      Collections.sort(registros, Comparator.comparing(Musica::getName)); // ordena bloco em memoria primaria
+      for (Musica musica : registros) { // escreve no arquivo temporario
           saidaTemporaria[indexInsercao].writeChar(' ');
-          saidaTemporaria[indexInsercao].writeInt(item.toByteArray().length);
-          saidaTemporaria[indexInsercao].write(item.toByteArray());
+          saidaTemporaria[indexInsercao].writeInt(musica.toByteArray().length);
+          saidaTemporaria[indexInsercao].write(musica.toByteArray());
       }
-      indexInsercao = (indexInsercao + 1) % qntArquivos;
+      indexInsercao = (indexInsercao + 1) % qntArquivos; // seleciona o proximo arquivo a armazenar o bloco
     }
     finalizarSaidaTmp();
     arquivo.close();
 
   }
 
-  
   private void intercalar(){
     
   }
@@ -71,30 +75,29 @@ public class IntercalacaoComum {
   }
 
   /*
+  * metodo para criar os arquivos temporarios
+  */
+  private void iniciarSaidaTemps() {
+    try {
+      for (int i = 0; i < qntArquivos; i++) {
+        saidaTemporaria[i] = new RandomAccessFile("db/arqTemp/saidaTemp" + i + ".db", "rw");
+      }
+    } catch (IOException e) {
+      System.err.println("Falha ao iniciar arquivos temporários");
+      e.printStackTrace();
+    }
+  }
+
+  /*
    * metodo para fechar os arquivos temporarios
    */
   private void finalizarSaidaTmp() {
     try {
         for (int i = 0; i < qntArquivos; i++) {
             saidaTemporaria[i].close();
-            // deletar o arquivo ?
         }
     } catch (IOException e) {
         System.err.println("Falha ao finalizar conexão com arquivos temporários");
-        e.printStackTrace();
-    }
-}
-
-  /*
-   * metodo para criar os arquivos temporarios
-   */
-  private void iniciarSaidaTemps() {
-    try {
-        for (int i = 0; i < qntArquivos; i++) {
-            saidaTemporaria[i] = new RandomAccessFile("saidaTemp" + i + ".db", "rw");
-        }
-    } catch (IOException e) {
-        System.err.println("Falha ao iniciar arquivos temporários");
         e.printStackTrace();
     }
   }

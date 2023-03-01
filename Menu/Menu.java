@@ -96,7 +96,12 @@ public class Menu {
           switch (op){
             case 1:
             // comum
-              IntercalacaoComum intComum = new IntercalacaoComum();
+              System.out.println("Digite a quantidade de caminhos: ");
+              int caminhos = scan.nextInt();
+              System.out.println("Digite o tamanho do bloco: ");
+              int bloco = scan.nextInt();
+              IntercalacaoComum intComum = new IntercalacaoComum(caminhos, bloco); // ordena por nome
+              intComum.ordenar();
             break;
             case 2:
             // blocos de tamanho variavel
