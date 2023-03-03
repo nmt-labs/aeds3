@@ -1,4 +1,4 @@
-package externalsortt;
+package externalsort;
 
 public class Selecao {
   
