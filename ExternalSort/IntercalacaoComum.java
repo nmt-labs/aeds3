@@ -6,10 +6,6 @@ package externalsort;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import musica.Musica;
 
@@ -238,7 +234,7 @@ public class IntercalacaoComum {
    * @param posArq vetor com posicoes do arquivo
    * @throws Exception caso erro
    */
-  private void mesclarRegistros(int index, long[] posArq) throws Exception {
+  private void mesclarRegistros(int index, int[] posArq) throws Exception {
     Musica[] musicasComparar = new Musica[qntArquivos];
 
     // iniciando o vetor de musicas
