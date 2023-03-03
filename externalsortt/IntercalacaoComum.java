@@ -1,7 +1,7 @@
 /*
  * ainda em desenvolvimento
  */
-package externalsort;
+package externalsortt;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

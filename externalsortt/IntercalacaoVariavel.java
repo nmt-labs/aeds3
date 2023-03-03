@@ -1,4 +1,4 @@
-package externalsort;
+package externalsortt;
 
 public class IntercalacaoVariavel {
   

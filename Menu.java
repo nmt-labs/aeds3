@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import externalsort.IntercalacaoComum;
+import externalsortt.IntercalacaoComum;
 import musica.Crud;
 import musica.Musica;
 
