@@ -1,15 +1,12 @@
-package Menu;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import ExternalSort.IntercalacaoComum;
-import ExternalSort.IntercalacaoVariavel;
-import ExternalSort.Selecao;
-import Musica.Crud;
-import Musica.Musica;
+import externalsort.IntercalacaoComum;
+import musica.Crud;
+import musica.Musica;
 
 import java.util.*;
 import java.io.IOException;
@@ -103,16 +100,8 @@ public class Menu {
               IntercalacaoComum intComum = new IntercalacaoComum(caminhos, bloco); // ordena por nome
               intComum.ordenar();
             break;
-            case 2:
-            // blocos de tamanho variavel
-              IntercalacaoVariavel intVariavel = new IntercalacaoVariavel();
-            break;
-            case 3:
-            // selecao por substuicao
-              Selecao selecao = new Selecao();
-            break;
-            default: System.out.println("Opção inválida");
-            break;
+            // 
+            
           }
         
         break;

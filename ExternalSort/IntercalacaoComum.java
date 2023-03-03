@@ -1,7 +1,7 @@
 /*
  * ainda em desenvolvimento
  */
-package ExternalSort;
+package externalsort;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import Musica.Musica;
+import musica.Musica;
 
 public class IntercalacaoComum {
   private String nomeArquivo = "db/musicas.db", fileTemp = "db/arqTemp/saidaTemp", tipoTemp = ".db";

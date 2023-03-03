@@ -1,6 +1,8 @@
-package Musica;
+package musica;
 import java.io.File;
 import java.io.RandomAccessFile;
+
+import musica.Musica;
 
 public class Crud {
   private String nomeDoArquivo = "musicas.db";
