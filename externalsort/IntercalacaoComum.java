@@ -49,8 +49,8 @@ public class IntercalacaoComum {
     while (!isAvaliable()) { // enquanto o arquivo nao termina
       registros = new Musica[tamBloco];
       lerRegistros();
-      System.out.println(registros[1].toString());
-      // sort(registros); // ordena bloco em memoria primaria
+      // System.out.println(registros[1].toString());
+      sort(registros); // ordena bloco em memoria primaria
       for (Musica musica : registros) { // escreve no arquivo temporario
         saidaTemporaria[index].seek(0);
         saidaTemporaria[index].writeChar(' ');
@@ -73,7 +73,7 @@ public class IntercalacaoComum {
     Musica teste = readMusica(arq);
     System.out.println(teste.toString());
   }
-
+  
   private void intercalar() throws Exception {
     int indexInsercao = 0;
     numPrimRead = 0;
@@ -102,19 +102,19 @@ public class IntercalacaoComum {
 
     // ...
   }
-
+  
   // -------------------------------------- utilitarios
-  // ----------------------------------------
+  
   /*
-   * metodo para verificar se existem dados para leitura
-   */
+  * metodo para verificar se existem dados para leitura
+  */
   private boolean isAvaliable() throws Exception {
     return arquivo.getFilePointer() == arquivo.length();
   }
-
+  
   /*
-   * metodo para criar os arquivos temporarios
-   */
+  * metodo para criar os arquivos temporarios
+  */
   private void iniciarSaidaTemps() {
     try {
       for (int i = 0; i < qntArquivos; i++) {
@@ -125,7 +125,7 @@ public class IntercalacaoComum {
       e.printStackTrace();
     }
   }
-
+  
   /*
    * metodo para fechar os arquivos temporarios
    */
@@ -139,15 +139,39 @@ public class IntercalacaoComum {
       e.printStackTrace();
     }
   }
+  
+  /**
+   * Swap two items fron an array
+   * @param array Array of Musica
+   * @param i position to swap
+   * @param j position to swap
+   */
+  public void swap(Musica[] array, int i, int j) {
+    Musica temp = array[i].clone();
+    array[i] = array[j].clone();
+    array[j] = temp.clone();
+  }
 
+  /**
+   * Selection sort by name
+   * @param array Array of Musica
+   */
+  public void sort(Musica[] array){ //by name
+    for (int i = (array.length - 1); i > 0; i--) {
+      for (int j = 0; j < i; j++) {
+        if (array[i].getName().compareTo(array[j].getName()) < 0) swap(array, i, j);
+      }
+    }
+  }
+  
   /*
-   * metodo para ler e armazenar registros na array da memoria primaria
+  * metodo para ler e armazenar registros na array da memoria primaria
    */
   private void lerRegistros() throws Exception {
     try {
       for (int i = 0; i < tamBloco; i++) {
         if (!isAvaliable())
-          registros[i] = readMusica(arquivo);
+        registros[i] = readMusica(arquivo);
         else
           i = tamBloco;
       }
