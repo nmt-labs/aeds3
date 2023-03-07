@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 
 public class Crud {
-  private String fileName = "db/musicas.db";
+  private String fileName = "db" + File.separator+ "musicas.db";
   private RandomAccessFile file;
 
   public Crud() {

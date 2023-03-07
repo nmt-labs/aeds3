@@ -3,20 +3,21 @@
  */
 package externalsort;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import musica.Musica;
 
-public class CommonIntercalation {
-  private String fileName = "musicas.db", fileTemp = "arqTemp/saidaTemp", typeTemp = ".db";
+public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
+  private String fileName = "db" + File.separator + "musicas.db", fileTemp = "db" + File.separator + "arqTemp" + File.separator +"saidaTemp", typeTemp = ".db";
   private RandomAccessFile file;
   private int qntFiles, blockSize, lastId, numPrimRead, numPrimWrite, numTmpPrim, numTmpSec;
   private RandomAccessFile[] tempOutput, tempInput;
+  private File tempFile;
   private Musica[] logs;
-  private long[] remainingBytesTmp;
-  private int[] filePos;
+  private long[] remainingBytesTmp, filePos; // posicao do ponteiro em cada arquivo temporario
 
   public CommonIntercalation(int qntFiles, int blockSize) throws FileNotFoundException {
     file = new RandomAccessFile(fileName, "rw");
@@ -24,6 +25,7 @@ public class CommonIntercalation {
     this.blockSize = blockSize;
     this.tempInput = new RandomAccessFile[qntFiles];
     this.tempOutput = new RandomAccessFile[qntFiles];
+    this.filePos = new long[qntFiles];
   }
 
   public void sort() throws Exception {
@@ -37,8 +39,13 @@ public class CommonIntercalation {
     System.out.println("Arquivo ordenado!");
   }
 
+  /**
+   * Distribute main file in n temporary files
+   * @throws Exception
+   */
   private void distribute() throws Exception {
     // ler o id do inicio do arquivo
+    file.seek(0);
     this.lastId = file.readInt();
     numPrimRead = 0;
 
@@ -57,7 +64,6 @@ public class CommonIntercalation {
           tempOutput[index].writeInt(logs[i].toByteArray().length);
           tempOutput[index].write(logs[i].toByteArray());
         }
-        System.out.println(i);
         //leituraTeste(tempOutput[index]);
       }
       index = (index + 1) % qntFiles; // seleciona o proximo arquivo a armazenar o bloco
@@ -71,6 +77,10 @@ public class CommonIntercalation {
   //   System.out.println(teste.toString());
   // }
   
+  /**
+   * Intercalation of temp files to ordenate
+   * @throws Exception
+   */
   private void intercalate() throws Exception {
     int indexInsertion = 0;
     numPrimRead = 0;
@@ -117,7 +127,9 @@ public class CommonIntercalation {
   private void startTemp() {
     try {
       for (int i = 0; i < qntFiles; i++) {
-        tempOutput[i] = new RandomAccessFile(fileTemp + (i + numPrimRead) + typeTemp, "rw");
+        tempFile = new File(fileTemp + (i + numPrimRead) + typeTemp);
+        if (!tempFile.exists()) tempFile.createNewFile();
+        tempOutput[i] = new RandomAccessFile(tempFile, "rw");
       }
     } catch (IOException e) {
       System.err.println("Falha ao iniciar arquivos temporários");
@@ -259,14 +271,33 @@ public class CommonIntercalation {
    * @param filePos vetor com posicoes do arquivo
    * @throws Exception caso erro
    */
-  private void mergeLogs(int index, int[] filePos) throws Exception {
+  private void mergeLogs(int index, long[] filePos) throws Exception {
     Musica[] compareMusic = new Musica[qntFiles];
-
-    // iniciando o vetor de musicas
+    int menor = 0; // index do menor valor
+    
+    // iniciando o vetor de musicas -> armazena a primeira musica de cada arquivo no vetor
     for (int i = 0; i < qntFiles; i++) {
       compareMusic[i] = readMusicMerge(tempInput[i], 0);
     }
 
+    while (filesToRead() > 1) {// enquanto nenhum arquivo le a ultima musica
+      int tempOutputIndex = 0;
+      // comparacao de cada bloco
+      for (int j = 0; j < blockSize; j++) {
+        // encontra a menor musica do vetor
+        for (int i = 0; i < compareMusic.length; i++) {
+          if (compareMusic[i].getName().compareTo(compareMusic[menor].getName()) < 0) menor = i;
+        }
+  
+        // colocar menor valor no arquivo de escrita
+        tempOutput[tempOutputIndex].writeChar(' ');
+        tempOutput[tempOutputIndex].writeInt(compareMusic[menor].toByteArray().length);
+        tempOutput[tempOutputIndex].write(compareMusic[menor].toByteArray());
+        
+        filePos[menor] = tempInput[menor].getFilePointer(); // anda com o ponteiro do arquivo da menor musica encontrada        
+      }
+      tempOutputIndex = (tempOutputIndex + 1) % qntFiles;
+    }
   }
 
   private Musica readMusicMerge(RandomAccessFile entrada, int pos) throws Exception {

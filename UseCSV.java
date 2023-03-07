@@ -1,5 +1,6 @@
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ class UseCSVReader {
   private String line;
 
   public UseCSVReader(){
-    file = "db/spotifyTeste.csv";
+    file = "db" + File.separator + "spotifyTeste.csv";
     line = "";
   }
 

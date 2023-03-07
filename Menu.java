@@ -9,6 +9,7 @@ import musica.Crud;
 import musica.Musica;
 
 import java.util.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.*;
@@ -158,7 +159,7 @@ public class Menu {
     RandomAccessFile file;
     int lastId;
     try {
-      file = new RandomAccessFile("db/musicas.db", "rw");
+      file = new RandomAccessFile("db" + File.separator + "musicas.db", "rw");
       lastId = file.readInt();
       file.close();
       lastId++;
