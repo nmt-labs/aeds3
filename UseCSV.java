@@ -1,4 +1,4 @@
-package csv;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.text.SimpleDateFormat;
@@ -13,7 +13,7 @@ class UseCSVReader {
   private String line;
 
   public UseCSVReader(){
-    arq = "spotifydb.csv";
+    arq = "db/spotifydb.csv";
     line = "";
   }
 
@@ -22,7 +22,7 @@ class UseCSVReader {
     String name, key;
     ArrayList<String> artists;
     int id, duration_ms, explicit;
-    double tempo = 8.5754E+15;
+    double tempo;
     Date release_date;
       
     FileReader fr = new FileReader(this.arq);
@@ -69,7 +69,7 @@ class UseCSVReader {
         Crud crud = new Crud();
         Musica musica = new Musica(id, key, name, artists, duration_ms, explicit, tempo, release_date);
         crud.create(musica);
-        // System.out.println(musica.toString());
+        System.out.println(musica.toString());
         line = br.readLine();
     }
     br.close();

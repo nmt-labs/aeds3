@@ -5,7 +5,7 @@ import java.io.RandomAccessFile;
 import musica.Musica;
 
 public class Crud {
-  private String nomeDoArquivo = "musicas.db";
+  private String nomeDoArquivo = "db/musicas.db";
   private RandomAccessFile arquivo;
 
   public Crud() {
