@@ -1,5 +1,5 @@
 package externalsort;
 
-public class Selecao {
+public class Selection {
   
 }

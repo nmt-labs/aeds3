@@ -9,15 +9,15 @@ import musica.Crud;
 import musica.Musica;
 
 class UseCSVReader {
-  private String arq;
+  private String file;
   private String line;
 
   public UseCSVReader(){
-    arq = "db/spotifyTeste.csv";
+    file = "db/spotifyTeste.csv";
     line = "";
   }
 
-  public void readArq() throws Exception{
+  public void readFile() throws Exception{
 
     String name, key;
     ArrayList<String> artists;
@@ -25,7 +25,7 @@ class UseCSVReader {
     double tempo;
     Date release_date;
       
-    FileReader fr = new FileReader(this.arq);
+    FileReader fr = new FileReader(this.file);
     BufferedReader br = new BufferedReader(fr);
 
     line = br.readLine();
@@ -79,6 +79,6 @@ class UseCSVReader {
 public class UseCSV {
   public static void main(String[] args) throws Exception {
     UseCSVReader csv = new UseCSVReader();
-    csv.readArq();
+    csv.readFile();
   }
 }

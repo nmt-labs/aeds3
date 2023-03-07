@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import externalsort.IntercalacaoComum;
+import externalsort.CommonIntercalation;
 import musica.Crud;
 import musica.Musica;
 
@@ -97,8 +97,8 @@ public class Menu {
               int caminhos = scan.nextInt();
               System.out.println("Digite o tamanho do bloco: ");
               int bloco = scan.nextInt();
-              IntercalacaoComum intComum = new IntercalacaoComum(caminhos, bloco); // ordena por nome
-              intComum.sort();
+              CommonIntercalation commonInt = new CommonIntercalation(caminhos, bloco); // ordena por nome
+              commonInt.sort();
             break;
             // 
             
@@ -117,9 +117,9 @@ public class Menu {
     Date release_date;
 
     
-    id = ultimoId();
+    id = lastId();
     
-    key = geradorKey();
+    key = keyGen();
     
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("Nome da música: ");
@@ -127,9 +127,9 @@ public class Menu {
     
     System.out.println("Artistas (separados por virgula): ");
     artistsString = scan.nextLine();
-    String[] artistsSeparado = artistsString.split(",");
-    for(int i = 0; i < artistsSeparado.length; i++){
-      artists.add(artistsSeparado[i]);
+    String[] separateArtists = artistsString.split(",");
+    for(int i = 0; i < separateArtists.length; i++){
+      artists.add(separateArtists[i]);
     }
     
     System.out.println("Duração (ms): ");
@@ -137,8 +137,8 @@ public class Menu {
     
     scan.nextLine(); //descarta proxima entrada (problema do nextInt)
     System.out.println("É explicita? (SIM ou NAO): ");
-    String linha = scan.nextLine();
-    explicit = (linha.equals("SIM")) ? 1 : 0;
+    String line = scan.nextLine();
+    explicit = (line.equals("SIM")) ? 1 : 0;
     
     System.out.println("Tempo: ");
     tempo = scan.nextDouble();
@@ -154,16 +154,16 @@ public class Menu {
   }
 
   // encontra o ultimo id e cria um novo
-  private static int ultimoId() {
-    RandomAccessFile arquivo;
-    int ultimoId;
+  private static int lastId() {
+    RandomAccessFile file;
+    int lastId;
     try {
-      arquivo = new RandomAccessFile("musicas.db", "rw");
-      ultimoId = arquivo.readInt();
-      arquivo.close();
-      ultimoId++;
+      file = new RandomAccessFile("db/musicas.db", "rw");
+      lastId = file.readInt();
+      file.close();
+      lastId++;
 
-      return ultimoId;
+      return lastId;
     } catch (IOException e) {
       System.out.println("Criando novo arquivo");
 
@@ -174,7 +174,7 @@ public class Menu {
   /*
    * Código retirado de: https://acervolima.com/gerar-string-aleatoria-de-determinado-tamanho-em-java/
    */
-  private static String geradorKey(){
+  private static String keyGen(){
     int n = 22; 
     // length is bounded by 256 Character
     byte[] array = new byte[256];
@@ -239,9 +239,9 @@ public class Menu {
         case 2:
           System.out.println("Insira novo(s) artistas (separados por vírgula): ");
           artistsString = scan.nextLine();
-          String[] artistsSeparado = artistsString.split(",");
-          for(int i = 0; i < artistsSeparado.length; i++){
-            artists.add(artistsSeparado[i]);
+          String[] separateArtists = artistsString.split(",");
+          for(int i = 0; i < separateArtists.length; i++){
+            artists.add(separateArtists[i]);
           }
 
           musica.setArtists(artists);

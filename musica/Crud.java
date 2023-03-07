@@ -2,21 +2,19 @@ package musica;
 import java.io.File;
 import java.io.RandomAccessFile;
 
-import musica.Musica;
-
 public class Crud {
-  private String nomeDoArquivo = "db/musicas.db";
-  private RandomAccessFile arquivo;
+  private String fileName = "db/musicas.db";
+  private RandomAccessFile file;
 
   public Crud() {
     try {
-      boolean verificaArquivo = (new File(nomeDoArquivo)).exists();
-      if (!verificaArquivo){
+      boolean checkFile = (new File(fileName)).exists();
+      if (!checkFile){
         try { // força o primeiro registro a ter id 0
           int id = -1;
-          arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
-          arquivo.writeInt(id);
-          arquivo.close();
+          file = new RandomAccessFile(fileName, "rw");
+          file.writeInt(id);
+          file.close();
         } catch (Exception e){System.out.println(e.getMessage() + "erro em criar o id");}
       }
     }catch(Exception e){System.out.println(e.getMessage());}
@@ -24,36 +22,36 @@ public class Crud {
 
   // Método de inserção no arquivo
   public void create(Musica musica) throws Exception {
-    arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
+    file = new RandomAccessFile(fileName, "rw");
 
     byte[] ba = musica.toByteArray(); // converte musica para byte
-    arquivo.seek(0); // move ponteiro para o inicio do arquivo
-    arquivo.writeInt(musica.getId()); // escreve id da ultima musica no inicio do arquivo
-    arquivo.seek(arquivo.length());// mover para o fim do arquivo
+    file.seek(0); // move ponteiro para o inicio do arquivo
+    file.writeInt(musica.getId()); // escreve id da ultima musica no inicio do arquivo
+    file.seek(file.length());// mover para o fim do arquivo
 
     // escrever registro
-    arquivo.writeChar(' '); // escreve a lápide
-    arquivo.writeInt(ba.length); // escreve tamanho do registro
-    arquivo.write(ba);
+    file.writeChar(' '); // escreve a lápide
+    file.writeInt(ba.length); // escreve tamanho do registro
+    file.write(ba);
 
-    arquivo.close();
+    file.close();
     System.out.println("Música adicionada com sucesso! Seu id é " + musica.getId());
   }
 
   // Método de leitura do arquivo
   public Musica read(int id) throws Exception {
-    arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
+    file = new RandomAccessFile(fileName, "rw");
     byte[] ba;
-    int tamanho;
+    int size;
     char lapide;
     Musica musica = new Musica();
     
-    arquivo.seek(4); // move ponteiro para o primeiro registro
-    while (arquivo.getFilePointer() < arquivo.length()) {
-      lapide = arquivo.readChar();
-      tamanho = arquivo.readInt();
-      ba = new byte[tamanho];
-      arquivo.read(ba);
+    file.seek(4); // move ponteiro para o primeiro registro
+    while (file.getFilePointer() < file.length()) {
+      lapide = file.readChar();
+      size = file.readInt();
+      ba = new byte[size];
+      file.read(ba);
       if (lapide != '*') {
         musica.fromByteArray(ba);
         if (musica.getId() == id)
@@ -61,82 +59,82 @@ public class Crud {
       }
     }
 
-    arquivo.close(); 
+    file.close(); 
     return null;
   }
 
   // Método de inserção no arquivo
   public boolean update(Musica musica) throws Exception {
-    arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
+    file = new RandomAccessFile(fileName, "rw");
     byte[] ba;
     byte[] newBa;
-    int tamanho;
+    int size;
     char lapide;
-    long posicao;
-    Musica musicaArq = new Musica();
+    long position;
+    Musica musicFile = new Musica();
 
-    arquivo.seek(4); // move ponteiro para o primeiro registro
-    while (arquivo.getFilePointer() < arquivo.length()) {
-      posicao = arquivo.getFilePointer(); // posicao atual do ponteiro no arquivo
-      lapide = arquivo.readChar();
-      tamanho = arquivo.readInt();
-      ba = new byte[tamanho];
-      arquivo.read(ba);
+    file.seek(4); // move ponteiro para o primeiro registro
+    while (file.getFilePointer() < file.length()) {
+      position = file.getFilePointer(); // posicao atual do ponteiro no arquivo
+      lapide = file.readChar();
+      size = file.readInt();
+      ba = new byte[size];
+      file.read(ba);
       if (lapide != '*') {
-        musicaArq.fromByteArray(ba); // le a musica do arquivo
-        if (musicaArq.getId() == musica.getId()) {
+        musicFile.fromByteArray(ba); // le a musica do arquivo
+        if (musicFile.getId() == musica.getId()) {
           newBa = musica.toByteArray();
-          if (newBa.length <= tamanho) { // se for menor que o registro anterior, sobrescreve
-              arquivo.seek(posicao + 6);
-              arquivo.write(newBa);
+          if (newBa.length <= size) { // se for menor que o registro anterior, sobrescreve
+              file.seek(position + 6);
+              file.write(newBa);
 
-              arquivo.close();
+              file.close();
               return true;
           } else { // senao, escreve no fim do arquivo e deleta o anterior
-              arquivo.seek(arquivo.length());
-              arquivo.writeChar(' ');
-              arquivo.writeInt(newBa.length);
-              arquivo.write(newBa);
-              delete(musicaArq.getId());
+              file.seek(file.length());
+              file.writeChar(' ');
+              file.writeInt(newBa.length);
+              file.write(newBa);
+              delete(musicFile.getId());
 
-              arquivo.close();
+              file.close();
               return true;
           }
         }
       }
     }
-    arquivo.close();
+    file.close();
     return false;
   }
 
   // Método de exclusão do arquivo
   public Musica delete(int id) throws Exception {
-    arquivo = new RandomAccessFile(nomeDoArquivo, "rw");
+    file = new RandomAccessFile(fileName, "rw");
     byte[] ba;
-    int tamanho;
+    int size;
     char lapide;
-    long posicao;
+    long position;
     Musica musica = new Musica();
 
-    arquivo.seek(4); // move ponteiro para o primeiro registro
-    while (arquivo.getFilePointer() < arquivo.length()) {
-      posicao = arquivo.getFilePointer(); // posicao atual do ponteiro no arquivo
-      lapide = arquivo.readChar();
-      tamanho = arquivo.readInt();
-      ba = new byte[tamanho];
-      arquivo.read(ba);
+    file.seek(4); // move ponteiro para o primeiro registro
+    while (file.getFilePointer() < file.length()) {
+      position = file.getFilePointer(); // posicao atual do ponteiro no arquivo
+      lapide = file.readChar();
+      size = file.readInt();
+      ba = new byte[size];
+      file.read(ba);
       if (lapide != '*') {
         musica.fromByteArray(ba);
         if (musica.getId() == id){
-          arquivo.seek(posicao); // volta para a posicao inicial do registro
-          arquivo.writeChar('*'); // marca a lapide
-          arquivo.close();
+          file.seek(position); // volta para a posicao inicial do registro
+          file.writeChar('*'); // marca a lapide
+          file.close();
           return musica;
         }
       }
     }
 
-    arquivo.close();
+    file.close();
     return null;
   }
 
