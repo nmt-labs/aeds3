@@ -56,7 +56,7 @@ public class Menu {
       // read
         System.out.println("Digite o ID da música:");
         id = scan.nextInt();
-        musica = crud.read(id); //erro
+        musica = crud.read(id);
         if (musica != null) {
             System.out.println(musica.toString());
         } else {
@@ -98,7 +98,7 @@ public class Menu {
               System.out.println("Digite o tamanho do bloco: ");
               int bloco = scan.nextInt();
               IntercalacaoComum intComum = new IntercalacaoComum(caminhos, bloco); // ordena por nome
-              intComum.ordenar();
+              intComum.sort();
             break;
             // 
             

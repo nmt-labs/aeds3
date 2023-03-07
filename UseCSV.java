@@ -13,7 +13,7 @@ class UseCSVReader {
   private String line;
 
   public UseCSVReader(){
-    arq = "db/spotifydb.csv";
+    arq = "db/spotifyTeste.csv";
     line = "";
   }
 
