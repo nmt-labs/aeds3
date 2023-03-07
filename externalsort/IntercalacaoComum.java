@@ -26,55 +26,53 @@ public class IntercalacaoComum {
     this.saidaTemporaria = new RandomAccessFile[qntArquivos];
   }
 
-  public void ordenar() throws Exception {
+  public void sort() throws Exception {
     // distribui os registros nos arquivos temporarios
     System.out.println("Distribuindo arquivo em arquivos temporarios...");
-    distribuir();
+    distribution();
     // intercala os arquivos temporarios
     System.out.println("Intercalando arquivos temporarios...");
-    intercalar();
+    intercalation();
 
     System.out.println("Arquivo ordenado!");
   }
 
-  private void distribuir() throws Exception {
+  private void distribution() throws Exception {
     // ler o id do inicio do arquivo
     this.ultimoId = arquivo.readInt();
     numPrimRead = 0;
 
-    iniciarSaidaTemps(); // apenas cria os arquivos temporarios
+    startTemp(); // apenas cria os arquivos temporarios
     int index = 0;
     registros = new Musica[tamBloco]; // array para ordenar os arquivos na memoria primaria
 
     while (!isAvaliable()) { // enquanto o arquivo nao termina
       registros = new Musica[tamBloco];
-      lerRegistros();
-      System.out.println(registros[1].toString());
-      // sort(registros); // ordena bloco em memoria primaria
-      for (Musica musica : registros) { // escreve no arquivo temporario
-        saidaTemporaria[index].seek(0);
-        saidaTemporaria[index].writeChar(' ');
-        saidaTemporaria[index].writeInt(musica.toByteArray().length);
-        saidaTemporaria[index].write(musica.toByteArray());
-        leituraTeste(saidaTemporaria[index]);
+      readRecords();
+      sortArray(registros); // ordena bloco em memoria primaria
+      System.out.println("teste");
+      for (int i = 0; i < registros.length; i++) { // escreve no arquivo temporario
+        if (registros[i] != null) {
+          // saidaTemporaria[index].seek(0);
+          saidaTemporaria[index].writeChar(' ');
+          saidaTemporaria[index].writeInt(registros[i].toByteArray().length);
+          saidaTemporaria[index].write(registros[i].toByteArray());
+        }
+        System.out.println(i);
+        //leituraTeste(saidaTemporaria[index]);
       }
       index = (index + 1) % qntArquivos; // seleciona o proximo arquivo a armazenar o bloco
     }
-    finalizarSaidaTmp();
+    closeTemp();
     arquivo.close();
   }
 
-  private Musica lerMusica(RandomAccessFile entrada, int pos) throws Exception {
-    entrada.seek(pos);
-    return readMusica(entrada);
-  }
-
-  private void leituraTeste(RandomAccessFile arq) throws Exception {
-    Musica teste = readMusica(arq);
-    System.out.println(teste.toString());
-  }
-
-  private void intercalar() throws Exception {
+  // private void leituraTeste(RandomAccessFile arq) throws Exception {
+  //   Musica teste = readMusica(arq);
+  //   System.out.println(teste.toString());
+  // }
+  
+  private void intercalation() throws Exception {
     int indexInsercao = 0;
     numPrimRead = 0;
     numPrimWrite = qntArquivos;
@@ -85,12 +83,12 @@ public class IntercalacaoComum {
       posArq[i] = 0; // comeca a ler os arquivos (posicao 0)
     }
     while (!(numTmpPrim == 1 && numTmpSec == 0 || numTmpPrim == 0 && numTmpSec == 1)) {
-      mesclarRegistros(indexInsercao, posArq);
-      numTmpPrim = numeroArqsLer();
+      mergeRecords(indexInsercao, posArq);
+      numTmpPrim = filesToRead();
       if (numTmpPrim == 0) {
-        alternarTmpFiles();
+        toggleTempFiles();
         tamBloco = tamBloco * qntArquivos;
-        numTmpSec = numeroArqsLer();
+        numTmpSec = filesToRead();
       }
       indexInsercao = (indexInsercao + 1) % qntArquivos;
     }
@@ -98,24 +96,26 @@ public class IntercalacaoComum {
       entradaTemporaria[i].close();
       saidaTemporaria[i].close();
     }
-    int numArq = getIdentificadorArq(indexInsercao);
+    int numArq = getFileId(indexInsercao);
 
     // ...
   }
-
+  
   // -------------------------------------- utilitarios
-  // ----------------------------------------
-  /*
-   * metodo para verificar se existem dados para leitura
+  
+  /**
+   * Verify if exists more data to read
+   * @return boolean
+   * @throws Exception
    */
   private boolean isAvaliable() throws Exception {
     return arquivo.getFilePointer() == arquivo.length();
   }
-
-  /*
-   * metodo para criar os arquivos temporarios
+  
+  /**
+   * Create temp files
    */
-  private void iniciarSaidaTemps() {
+  private void startTemp() {
     try {
       for (int i = 0; i < qntArquivos; i++) {
         saidaTemporaria[i] = new RandomAccessFile(fileTemp + (i + numPrimRead) + tipoTemp, "rw");
@@ -126,10 +126,10 @@ public class IntercalacaoComum {
     }
   }
 
-  /*
-   * metodo para fechar os arquivos temporarios
+  /**
+   * Close temp files
    */
-  private void finalizarSaidaTmp() {
+  private void closeTemp() {
     try {
       for (int i = 0; i < qntArquivos; i++) {
         saidaTemporaria[i].close();
@@ -139,15 +139,42 @@ public class IntercalacaoComum {
       e.printStackTrace();
     }
   }
-
-  /*
-   * metodo para ler e armazenar registros na array da memoria primaria
+  
+  /**
+   * Swap two items fron an array
+   * @param array Array of Musica
+   * @param i position to swap
+   * @param j position to swap
    */
-  private void lerRegistros() throws Exception {
+  public void swap(Musica[] array, int i, int j) {
+    Musica temp = array[i].clone();
+    array[i] = array[j].clone();
+    array[j] = temp.clone();
+  }
+
+  /**
+   * Selection sort by name
+   * @param array Array of Musica
+   */
+  public void sortArray(Musica[] array){ // by name
+    for (int i = (array.length - 1); i > 0; i--) {
+      if (array[i] != null) { // caso o array tenha espacos vazios
+        for (int j = 0; j < i; j++) {
+          if (array[i].getName().compareTo(array[j].getName()) < 0) swap(array, i, j);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Read and set items in an array in primary memory
+   * @throws Exception
+   */
+  private void readRecords() throws Exception {
     try {
       for (int i = 0; i < tamBloco; i++) {
         if (!isAvaliable())
-          registros[i] = readMusica(arquivo);
+        registros[i] = readMusica(arquivo);
         else
           i = tamBloco;
       }
@@ -174,11 +201,10 @@ public class IntercalacaoComum {
   }
 
   /**
-   * Função que retorna um numero de arquivos para ler internamente
-   * 
+   * Function that returns the number of files to read internally
    * @return total de arquivos disponiveis para ler
    */
-  private int numeroArqsLer() {
+  private int filesToRead() {
     int totFiles = 0;
     try {
       for (int i = 0; i < qntArquivos; i++) {
@@ -199,7 +225,7 @@ public class IntercalacaoComum {
    * 
    * @throws Exception
    */
-  private void alternarTmpFiles() throws Exception {
+  private void toggleTempFiles() throws Exception {
     for (int i = 0; i < qntArquivos; i++) {
       entradaTemporaria[i].close();
       saidaTemporaria[i].close();
@@ -219,7 +245,7 @@ public class IntercalacaoComum {
    * @param index parametro de indice do arquivo
    * @return
    */
-  private int getIdentificadorArq(int index) {
+  private int getFileId(int index) {
     if (index == 0) {
       return ((qntArquivos - 1) + numPrimRead);
     } else {
@@ -234,7 +260,7 @@ public class IntercalacaoComum {
    * @param posArq vetor com posicoes do arquivo
    * @throws Exception caso erro
    */
-  private void mesclarRegistros(int index, int[] posArq) throws Exception {
+  private void mergeRecords(int index, int[] posArq) throws Exception {
     Musica[] musicasComparar = new Musica[qntArquivos];
 
     // iniciando o vetor de musicas
@@ -242,5 +268,10 @@ public class IntercalacaoComum {
       musicasComparar[i] = lerMusica(entradaTemporaria[i], 0);
     }
 
+  }
+
+  private Musica lerMusica(RandomAccessFile entrada, int pos) throws Exception {
+    entrada.seek(pos);
+    return readMusica(entrada);
   }
 }

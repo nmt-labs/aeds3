@@ -123,4 +123,20 @@ public class Musica {
     "\nData de lançamento: " + release_date_string + 
     "\nTempo: " + tempo;
   }
+
+  public Musica clone() {
+
+    Musica cloned = new Musica();
+
+    cloned.id = this.id;
+    cloned.key = this.key;
+    cloned.name = this.name;
+    cloned.artists = this.artists;
+    cloned.duration_ms = this.duration_ms;
+    cloned.explicit = this.explicit;
+    cloned.tempo = this.tempo;
+    cloned.release_date = this.release_date;
+
+    return cloned;
+}
 }
