@@ -18,6 +18,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
   private File tempFile;
   private Musica[] logs;
   private long[] remainingBytesTmp, filePos; // posicao do ponteiro em cada arquivo temporario
+  private int[] counterMusicToRead;
 
   public CommonIntercalation(int qntFiles, int blockSize) throws FileNotFoundException {
     file = new RandomAccessFile(fileName, "rw");
@@ -26,6 +27,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     this.tempInput = new RandomAccessFile[qntFiles];
     this.tempOutput = new RandomAccessFile[qntFiles];
     this.filePos = new long[qntFiles];
+    this.counterMusicToRead = new int[qntFiles];
   }
 
   public void sort() throws Exception {
@@ -92,7 +94,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       filePos[i] = 0; // comeca a ler os arquivos (posicao 0)
     }
     while (!(numTmpPrim == 1 && numTmpSec == 0 || numTmpPrim == 0 && numTmpSec == 1)) {
-      mergeLogs(indexInsertion);
+      mergeFiles(indexInsertion);
       numTmpPrim = filesToRead();
       if (numTmpPrim == 0) {
         toggleTempFiles();
@@ -254,29 +256,53 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
    * @param index index do arquivo que sera escrito
    * @throws Exception caso erro
    */
-  private void mergeLogs(int index) throws Exception {
+  private void mergeFiles(int index) throws Exception {
     Musica[] compareMusic = new Musica[qntFiles];
-    int menor = 0; // index do menor valor
+    int smallestValueIndex; // index do menor valor
     
     // iniciando o vetor de musicas -> armazena a primeira musica de cada arquivo no vetor
+    // iniciando contador -> nenhuma musica ainda foi colocada no arquivo de escrita
     for (int i = 0; i < qntFiles; i++) {
       compareMusic[i] = readMusicMerge(tempInput[i], 0);
+      counterMusicToRead[i] = 0;
     }
 
-    while () {// enquanto nenhum arquivo le um bloco inteiro
+    while (isBlockAvailable()) {// enquanto ainda existe bloco de algum arquivo para a leitura -> algum elemento do vetor de contador e difernete do tamanho do bloco
+      smallestValueIndex = firstAvailableFileToMerge(); // TINHA QUE RECEBER O MENOR INDEX DO BLOCO AINDA VALIDO
       // encontra a menor musica do vetor
       for (int i = 0; i < compareMusic.length; i++) {
-        if (compareMusic[i].getName().compareTo(compareMusic[menor].getName()) < 0) menor = i;
+        if (counterMusicToRead[i] < blockSize){ // pula o arquivo que ja teve seu bloco todo lido
+          if (compareMusic[i].getName().compareTo(compareMusic[smallestValueIndex].getName()) < 0) smallestValueIndex = i;
+        }
       }
       
       // colocar menor valor no arquivo de escrita
       tempOutput[index].writeChar(' ');
-      tempOutput[index].writeInt(compareMusic[menor].toByteArray().length);
-      tempOutput[index].write(compareMusic[menor].toByteArray());
+      tempOutput[index].writeInt(compareMusic[smallestValueIndex].toByteArray().length);
+      tempOutput[index].write(compareMusic[smallestValueIndex].toByteArray());
       
-      filePos[menor] = tempInput[menor].getFilePointer(); // anda com o ponteiro do arquivo da menor musica encontrada     
-      compareMusic[menor] = readMusicMerge(tempInput[menor], filePos[menor]);   
+      filePos[smallestValueIndex] = tempInput[smallestValueIndex].getFilePointer(); // anda com o ponteiro do arquivo da menor musica encontrada     
+      counterMusicToRead[smallestValueIndex]++;
+      compareMusic[smallestValueIndex] = readMusicMerge(tempInput[smallestValueIndex], filePos[smallestValueIndex]); // le proxima musica do arquivo inserido
     }
+  }
+
+  /**
+   * Verify if all the block files were read and written on tempOutput
+   * @return
+   */
+  private boolean isBlockAvailable() {
+    for(int i = 0; i < counterMusicToRead.length; i++){
+      if (counterMusicToRead[i] < blockSize) return true;
+    }
+    return false;
+  }
+
+  private int firstAvailableFileToMerge(){
+    for(int i = 0; i < counterMusicToRead.length; i++){
+      if (counterMusicToRead[i] < blockSize) return i;
+    }
+    return counterMusicToRead.length;
   }
   
   /**
