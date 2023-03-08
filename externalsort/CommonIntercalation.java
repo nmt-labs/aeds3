@@ -92,7 +92,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       filePos[i] = 0; // comeca a ler os arquivos (posicao 0)
     }
     while (!(numTmpPrim == 1 && numTmpSec == 0 || numTmpPrim == 0 && numTmpSec == 1)) {
-      mergeLogs(indexInsertion, filePos);
+      mergeLogs(indexInsertion);
       numTmpPrim = filesToRead();
       if (numTmpPrim == 0) {
         toggleTempFiles();
@@ -182,6 +182,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
    * @throws Exception
    */
   private void readLogs() throws Exception {
+
     try {
       for (int i = 0; i < blockSize; i++) {
         if (!isAvaliable())
@@ -194,23 +195,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       e.printStackTrace();
     }
   }
-
-  /*
-   * metodo para ler registro no arquivo principal (parecido com o do crud)
-   */
-  private Musica readMusic(RandomAccessFile arq) throws Exception {
-    Musica reg = null;
-    char lapide = arq.readChar();
-    int sizeReg = arq.readInt();
-    byte[] bytearray = new byte[sizeReg];
-    arq.read(bytearray);
-    // if (lapide != '*') {
-    reg = new Musica();
-    reg.fromByteArray(bytearray);
-    // }
-    return reg;
-  }
-
+  
   /**
    * Function that returns the number of files to read internally
    * @return total de arquivos disponiveis para ler
@@ -230,7 +215,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     }
     return totFiles;
   }
-
+  
   /**
    * Alternar entre arquivos temporarios que estão sendo ordenados internamente
    * 
@@ -246,13 +231,12 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     for (int i = 0; i < qntFiles; i++) {
       tempInput[i] = new RandomAccessFile(fileTemp + (i + numPrimRead) + typeTemp, "rw");
       tempOutput[i] = new RandomAccessFile(fileTemp + (i + numPrimWrite) + typeTemp, "rw");
+      filePos[i] = 0; // comeca a ler os arquivos (posicao 0)
     }
   }
 
   /**
-   * Função que pega um indentificador do indice de um arquivo temporário para
-   * acessar arquivos dentro de um array ou dentro de funções
-   * 
+   * Get index id from temp file
    * @param index parametro de indice do arquivo
    * @return
    */
@@ -263,15 +247,14 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       return ((index - 1) + numPrimRead);
     }
   }
-
+  
   /**
-   * Merge logs from n files and ordenate
+   * Merge logs from n files in one file
    * 
-   * @param index  parametro
-   * @param filePos vetor com posicoes do arquivo
+   * @param index index do arquivo que sera escrito
    * @throws Exception caso erro
    */
-  private void mergeLogs(int index, long[] filePos) throws Exception {
+  private void mergeLogs(int index) throws Exception {
     Musica[] compareMusic = new Musica[qntFiles];
     int menor = 0; // index do menor valor
     
@@ -280,28 +263,50 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       compareMusic[i] = readMusicMerge(tempInput[i], 0);
     }
 
-    while (filesToRead() > 1) {// enquanto nenhum arquivo le a ultima musica
-      int tempOutputIndex = 0;
-      // comparacao de cada bloco
-      for (int j = 0; j < blockSize; j++) {
-        // encontra a menor musica do vetor
-        for (int i = 0; i < compareMusic.length; i++) {
-          if (compareMusic[i].getName().compareTo(compareMusic[menor].getName()) < 0) menor = i;
-        }
-  
-        // colocar menor valor no arquivo de escrita
-        tempOutput[tempOutputIndex].writeChar(' ');
-        tempOutput[tempOutputIndex].writeInt(compareMusic[menor].toByteArray().length);
-        tempOutput[tempOutputIndex].write(compareMusic[menor].toByteArray());
-        
-        filePos[menor] = tempInput[menor].getFilePointer(); // anda com o ponteiro do arquivo da menor musica encontrada        
+    while () {// enquanto nenhum arquivo le um bloco inteiro
+      // encontra a menor musica do vetor
+      for (int i = 0; i < compareMusic.length; i++) {
+        if (compareMusic[i].getName().compareTo(compareMusic[menor].getName()) < 0) menor = i;
       }
-      tempOutputIndex = (tempOutputIndex + 1) % qntFiles;
+      
+      // colocar menor valor no arquivo de escrita
+      tempOutput[index].writeChar(' ');
+      tempOutput[index].writeInt(compareMusic[menor].toByteArray().length);
+      tempOutput[index].write(compareMusic[menor].toByteArray());
+      
+      filePos[menor] = tempInput[menor].getFilePointer(); // anda com o ponteiro do arquivo da menor musica encontrada     
+      compareMusic[menor] = readMusicMerge(tempInput[menor], filePos[menor]);   
     }
   }
-
-  private Musica readMusicMerge(RandomAccessFile entrada, int pos) throws Exception {
+  
+  /**
+   * Read Music from file in a specific position
+   * @param entrada
+   * @param pos
+   * @return
+   * @throws Exception
+   */
+  private Musica readMusicMerge(RandomAccessFile entrada, long pos) throws Exception {
     entrada.seek(pos);
     return readMusic(entrada);
+  }
+  
+  /**
+   * Read Music from file
+   * @param arq
+   * @return
+   * @throws Exception
+   */
+  private Musica readMusic(RandomAccessFile arq) throws Exception {
+    Musica reg = null;
+    char lapide = arq.readChar();
+    int sizeReg = arq.readInt();
+    byte[] bytearray = new byte[sizeReg];
+    arq.read(bytearray);
+    // if (lapide != '*') {
+    reg = new Musica();
+    reg.fromByteArray(bytearray);
+    // }
+    return reg;
   }
 }
