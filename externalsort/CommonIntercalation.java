@@ -29,8 +29,8 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     this.filePos = new long[qntFiles];
     this.counterMusicToRead = new int[qntFiles];
     this.remainingBytesTmp = new long[qntFiles];
-    this.numTmpPrim = 0;
-    this.numTmpSec = 0;
+    this.numTmpPrim = -1;
+    this.numTmpSec = -1;
   }
 
   public void sort() throws Exception {
@@ -96,10 +96,11 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       tempOutput[i] = new RandomAccessFile(fileTemp + (i + numPrimWrite) + typeTemp, "rw");
       filePos[i] = 0; // comeca a ler os arquivos (posicao 0)
     }
+
     while (!(numTmpPrim == 1 && numTmpSec == 0 || numTmpPrim == 0 && numTmpSec == 1)) { // enquanto existir apenas um arquivo para leitura -> os outros arquivos estao vazios
       mergeFiles(indexInsertion);
-      // System.out.println("numTempPrim: " + numTmpPrim);
-      // System.out.println("numTempSec: " + numTmpSec);
+      System.out.println("numTempPrim: " + numTmpPrim);
+      System.out.println("numTempSec: " + numTmpSec);
       numTmpPrim = filesToRead();
       if (numTmpPrim == 0) {
         System.out.println("entrou no if");
@@ -190,7 +191,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     for (int i = (array.length - 1); i > 0; i--) {
       if (array[i] != null) { // caso o array tenha espacos vazios
         for (int j = 0; j < i; j++) {
-          if (array[i].getName().compareTo(array[j].getName()) < 0) swap(array, i, j);
+          if (array[i].getId() < array[j].getId()) swap(array, i, j);
         }
       }
     }
@@ -250,6 +251,7 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     for (int i = 0; i < qntFiles; i++) {
       tempInput[i] = new RandomAccessFile(fileTemp + (i + numPrimRead) + typeTemp, "rw");
       tempOutput[i] = new RandomAccessFile(fileTemp + (i + numPrimWrite) + typeTemp, "rw");
+      tempOutput[i].setLength(0);
       filePos[i] = 0; // comeca a ler os arquivos (posicao 0)
     }
   }
@@ -280,17 +282,25 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     // iniciando o vetor de musicas -> armazena a primeira musica de cada arquivo no vetor
     // iniciando contador -> nenhuma musica ainda foi colocada no arquivo de escrita
     for (int i = 0; i < qntFiles; i++) {
-      compareMusic[i] = readMusicMerge(tempInput[i], 0);
+      System.out.println("entrou no for");
+      if (filePos[i] < tempInput[i].length()){
+        compareMusic[i] = readMusicMerge(tempInput[i], filePos[i]);
+      }
+
       filePos[i] = tempInput[i].getFilePointer(); // armazena a posicao do o ponteiro dos arquivos de entrada
+      System.out.println("1 FilePos"+i+": "+filePos[i]);
       counterMusicToRead[i] = 0;
     }
+
+    System.out.println("Tamanho arquivo temp"+0+": "+tempInput[0].length());
+    System.out.println("Tamanho arquivo temp"+1+": "+tempInput[1].length());
 
     while (isBlockAvailable()) {// enquanto ainda existe bloco de algum arquivo para a leitura -> algum elemento do vetor de contador e difernete do tamanho do bloco
       smallestValueIndex = firstAvailableFileToMerge(); // recebe menor index do bloco ainda valido
       // encontra a menor musica do vetor
       for (int i = 0; i < compareMusic.length; i++) {
-        if (counterMusicToRead[i] < blockSize){ // pula o arquivo que ja teve seu bloco todo lido
-          if (compareMusic[i].getName().compareTo(compareMusic[smallestValueIndex].getName()) < 0) smallestValueIndex = i;
+        if (counterMusicToRead[i] < blockSize && filePos[i] < tempInput[i].length()){ // pula o arquivo que ja teve seu bloco todo lido
+          if (compareMusic[i].getId() <= compareMusic[smallestValueIndex].getId()) smallestValueIndex = i;
           //System.out.println(compareMusic[smallestValueIndex].toString());
         }
       }
@@ -298,12 +308,13 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       tempOutput[index].writeChar(' ');
       tempOutput[index].writeInt(compareMusic[smallestValueIndex].toByteArray().length);
       tempOutput[index].write(compareMusic[smallestValueIndex].toByteArray());
+      System.out.println("MUSICA QUE FOI ESCRITA NO ARQUIVO"+index+": "+compareMusic[smallestValueIndex].getName()); 
       
       counterMusicToRead[smallestValueIndex]++;
       //for(int i = 0; i < counterMusicToRead.length; i++) System.out.println("Contador"+i+": "+counterMusicToRead[i]);
       if(counterMusicToRead[smallestValueIndex] < blockSize){
         compareMusic[smallestValueIndex] = readMusicMerge(tempInput[smallestValueIndex], filePos[smallestValueIndex]); // le proxima musica do arquivo inserido
-        filePos[smallestValueIndex] = tempInput[smallestValueIndex].getFilePointer(); // armazena a posicao do o ponteiro do arquivo da menor musica encontrada     
+        filePos[smallestValueIndex] = tempInput[smallestValueIndex].getFilePointer(); // armazena a posicao do o ponteiro do arquivo da menor musica encontrada  
       }
     }
   }
@@ -311,10 +322,11 @@ public class CommonIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
   /**
    * Verify if all the block files were read and written on tempOutput
    * @return
+   * @throws IOException
    */
-  private boolean isBlockAvailable() {
+  private boolean isBlockAvailable() throws IOException {
     for(int i = 0; i < counterMusicToRead.length; i++){
-      if (counterMusicToRead[i] < blockSize) return true;
+      if (counterMusicToRead[i] < blockSize && filePos[i] < tempInput[i].length()) return true;
     }
     return false;
   }
