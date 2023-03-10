@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import externalsort.CommonIntercalation;
+import externalsort.VariableIntercalation;
 import musica.Crud;
 import musica.Musica;
 
@@ -85,6 +86,11 @@ public class Menu {
         }
         break;
         case 5:
+        int caminhos, bloco;
+        // criar subpasta fileTemp
+        File fileTemp = new File("db" + File.separator + "fileTemp");
+        if(!fileTemp.exists()) fileTemp.mkdirs();
+
         // ordenar
           System.out.println("1 - Intercalação balanceada comum");
           System.out.println("2 - Intercalação balanceada com blocos de tamanho variável");
@@ -95,13 +101,22 @@ public class Menu {
             case 1:
             // comum
               System.out.println("Digite a quantidade de caminhos: ");
-              int caminhos = scan.nextInt();
+              caminhos = scan.nextInt();
               System.out.println("Digite o tamanho do bloco: ");
-              int bloco = scan.nextInt();
+              bloco = scan.nextInt();
               CommonIntercalation commonInt = new CommonIntercalation(caminhos, bloco); // ordena por nome
               commonInt.sort();
             break;
-            // 
+            case 2:
+              System.out.println("Digite a quantidade de caminhos: ");
+              caminhos = scan.nextInt();
+              System.out.println("Digite o tamanho do bloco: ");
+              bloco = scan.nextInt();
+              VariableIntercalation variableInt = new VariableIntercalation(caminhos, bloco); // ordena por nome
+              variableInt.sort();
+            break;
+            case 3:
+            break;
             
           }
         
