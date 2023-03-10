@@ -118,6 +118,9 @@ public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     }
     //copia do arquivo temporario pro arquivo final
     copyFile(fileTempFinal, sortedFile);
+
+    // deletar arquivos temporarios
+    deleteTempFiles();
   }
   
   // -------------------------------------- utilitarios
@@ -158,6 +161,16 @@ public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
     } catch (IOException e) {
       System.err.println("Falha ao finalizar conexão com arquivos temporários");
       e.printStackTrace();
+    }
+  }
+
+  /**
+   * Delete temp files
+   */
+  private void deleteTempFiles() {
+    for (int i = 0; i < qntFiles*2; i++) {
+      tempFile = new File(fileTemp + i + typeTemp);
+      if (tempFile.exists()) tempFile.delete();
     }
   }
   
