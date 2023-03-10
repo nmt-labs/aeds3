@@ -99,7 +99,6 @@ public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
         numTmpSec = filesToRead();
       }
       indexInsertion = (indexInsertion + 1) % qntFiles;
-      System.out.println(numTmpPrim + " " + numTmpSec + " " + indexInsertion);
     }
     for (int i = 0; i < qntFiles; i++) {
       tempInput[i].close();
@@ -281,7 +280,7 @@ public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
   private void mergeFiles(int index) throws Exception {
     Musica[] compareMusic = new Musica[qntFiles];
     Musica wroteMusic = new Musica();
-    int smallestValueIndex; // index do menor valor
+    int smallestValueIndex, wroteMusicId = 0; // index do menor valor
     
     // iniciando o vetor de musicas -> armazena a primeira musica de cada arquivo no vetor
     // iniciando contador -> nenhuma musica ainda foi colocada no arquivo de escrita
@@ -296,7 +295,7 @@ public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
 
     while (isFilesAvailables() && !isAllFilesAllRead()) { // enquanto ainda existe bloco de algum arquivo para a leitura -> algum elemento do vetor de contador e difernete do tamanho do bloco
       smallestValueIndex = firstAvailableFileToMerge(); // recebe menor index do bloco ainda valido
-      filePos[smallestValueIndex] = tempInput[smallestValueIndex].getFilePointer();
+      filePos[wroteMusicId] = tempInput[wroteMusicId].getFilePointer();
       // encontra a menor musica do vetor
       for (int i = 0; i < compareMusic.length; i++) {
         if (availableFiles[i] == true && filePos[i] < tempInput[i].length()){ // pula o arquivo que ja teve seu bloco todo lido
@@ -307,15 +306,16 @@ public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       tempOutput[index].writeChar(' ');
       tempOutput[index].writeInt(compareMusic[smallestValueIndex].toByteArray().length);
       tempOutput[index].write(compareMusic[smallestValueIndex].toByteArray());
-      System.out.println("MUSICA QUE FOI ESCRITA NO ARQUIVO"+index+": "+compareMusic[smallestValueIndex].getName()); 
+      //System.out.println("MUSICA QUE FOI ESCRITA NO ARQUIVO"+index+": "+compareMusic[smallestValueIndex].getId()+" "+compareMusic[smallestValueIndex].getName()); 
       wroteMusic = compareMusic[smallestValueIndex].clone();
+      wroteMusicId = smallestValueIndex;
       
       
       // se nao chegou no fim do arquivo, le a proxima musica
       if(filePos[smallestValueIndex] < tempInput[smallestValueIndex].length()){ 
         compareMusic[smallestValueIndex] = readMusicMerge(tempInput[smallestValueIndex], filePos[smallestValueIndex]); // le proxima musica do arquivo inserido
         // se musica lida for menor que a musica escrita, desconsidera o arquivo
-        if(wroteMusic.getId() < compareMusic[smallestValueIndex].getId()) availableFiles[smallestValueIndex] = false;
+        if(wroteMusic.getId() > compareMusic[smallestValueIndex].getId()) availableFiles[smallestValueIndex] = false;
       }
     }
   }
@@ -382,7 +382,6 @@ public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
       reg = new Musica();
       reg.fromByteArray(bytearray);
      }
-     //System.out.println( reg.toString());
     return reg;
   }
 
