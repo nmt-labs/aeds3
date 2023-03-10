@@ -1,5 +1,4 @@
 *.class
-*.csv
+spotifyteste.csv
 teste.java
 musicasteste.db
-db/arqTemp/
