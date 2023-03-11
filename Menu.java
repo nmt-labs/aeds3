@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import externalsort.CommonIntercalation;
+import externalsort.Selection;
 import externalsort.VariableIntercalation;
 import musica.Crud;
 import musica.Musica;
@@ -86,7 +87,7 @@ public class Menu {
         }
         break;
         case 5:
-        int caminhos, bloco;
+        int caminhos, bloco, heap;
         // criar subpasta fileTemp
         File fileTemp = new File("db" + File.separator + "fileTemp");
         if(!fileTemp.exists()) fileTemp.mkdirs();
@@ -116,8 +117,15 @@ public class Menu {
               variableInt.sort();
             break;
             case 3:
+              System.out.println("Digite a quantidade de caminhos: ");
+              caminhos = scan.nextInt();
+              System.out.println("Digite o tamanho do heap: ");
+              heap = scan.nextInt();
+              Selection selection = new Selection(caminhos, heap); // ordena por nome
+              selection.sort();
             break;
-            
+            default: System.out.println("Comando inválido");
+              break;
           }
         
         break;

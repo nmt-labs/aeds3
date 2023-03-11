@@ -379,100 +379,164 @@ public class Selection {
 
   //  --- Heapsort ---
 
-  public void swap(int i, int j) {
+  // public void swap(int i, int j) {
+  //   Musica temp = logs[i].clone();
+  //   int weightTemp = weight[i];
+  //   logs[i] = logs[j].clone();
+  //   weight[i] = weight[j];
+  //   logs[j] = temp.clone();
+  //   weight[j] = weightTemp;
+
+  // }
+
+
+  // public void construir(int tamHeap){
+  //   for(int i = tamHeap; i > 1 && (logs[i].getId() > logs[i/2].getId()); i /= 2){
+  //     swap(i, i/2);
+  //   }
+  // }
+
+
+  // public void reconstruir(int tamHeap){
+  //   int i = 1;
+  //   while(i <= (tamHeap/2)){
+  //     int filho = getMaiorFilho(i, tamHeap);
+  //     if(logs[i].getId() > logs[i/2].getId() && weight[i] > weight[i/2]){
+  //       swap(i, filho);
+  //       i = filho;
+  //     }else{
+  //       i = tamHeap;
+  //     }
+  //   }
+  // }
+
+  // public int getMaiorFilho(int i, int tamHeap) { // acho que aqui tem que ser MENOR FILHO
+  //   int filho;
+  //   if (2*i == tamHeap || logs[2*i].getId() > logs[2*i+1].getId()){
+  //     filho = 2*i;
+  //   } else if(logs[2*i].getId() == logs[2*i+1].getId()){
+  //     if(2*i == tamHeap || logs[2*i].getName().compareTo(logs[2*i+1].getName()) > 0){ 
+  //       filho = 2*i;
+  //     }else{
+  //       filho = 2*i + 1;
+  //     }
+  //   } else {
+  //     filho = 2*i + 1;
+  //   }
+  //   return filho;
+  // }
+
+  // public void heapsort(int index) throws Exception{
+  //   Musica wroteMusic = new Musica();
+  //   weight = new int[logs.length];
+  //   int currentWeight = 0;
+  //   //Alterar o vetor ignorando a posicao zero
+  //   Musica[] tmp = new Musica[logs.length+1]; // arraySize + 1 ?
+  //   for(int i = 0; i < logs.length; i++){
+  //       tmp[i+1] = logs[i].clone();
+  //       weight[i] = currentWeight;
+  //   }
+  //   logs = tmp;
+
+  //   //Contrucao do heap
+  //   for(int tamHeap = 2; tamHeap <= logs.length; tamHeap++){
+  //       construir(tamHeap);
+  //   }
+
+  //   while (isAvaliable()) { // enquanto ainda tem registros para serem lidos no arquivo principal
+  //     // Ordenar o heap
+  //     int tamHeap = logs.length;
+  //     while(tamHeap > 1){
+  //         swap(1, tamHeap--);
+  //         reconstruir(tamHeap);
+  //     }
+
+  //     // se o peso atual for diferente do peso do menor registro, tocar arquivo de output
+  //     if (currentWeight != weight[0]) index = (index + 1) % qntFiles;
+  //     // como o heap foi reordenado, agora o currentWeight sera o mesmo do 1o item do array
+  //     currentWeight = weight[0];
+
+  //     // Escrever o menor elemento
+  //     tempOutput[index].writeChar(' ');
+  //     tempOutput[index].writeInt(logs[0].toByteArray().length);
+  //     tempOutput[index].write(logs[0].toByteArray());
+  //     wroteMusic = logs[0].clone();
+
+  //     logs[0] = readMusic(file);
+
+  //     // se a musica lida for menor que a escrita, adiciona o peso
+  //     if (logs[0].getId() < wroteMusic.getId()) weight[0]++;
+  //   }
+
+  //   // escreve o resto dos registros que estao no logs
+  //   for (int i = 1; i < logs.length; i++) {
+  //     tempOutput[index].writeChar(' ');
+  //     tempOutput[index].writeInt(logs[i].toByteArray().length);
+  //     tempOutput[index].write(logs[i].toByteArray());
+  //   }
+  // }
+  // //  --- Heapsort ---
+  public void heapsort(int[] array) {
+    vetor = array;          // vetor global recebe o vetor passado como parâmetro
+    tam = vetor.length - 1;     // o tamanho deste vetor é armazenado em 'tam', que também é global
+    
+    // Chama a função para construir um Max-Heap
+    constroiHeap();
+    
+    // Assim que a Max-Heap foi criada, o processo de ordenação pode começar.
+    // Através desse loop que a troca do valor do topo com o valor da última posição da Heap é feita
+    for (int i = tam; i > 0; i--) {
+        troca(0, tam);      // Troca a posição
+        tam -= 1;           // Diminui 'tam' para não alterar a posição do maior valor nas próximas iterações
+        maxHeapifica(0);    // Como existe um valor menor no topo, é necessário heapificar novamente a árvore inteira
+    }
+}
+
+// Função que constrói o Max-Heap
+private void constroiHeap() {
+    // Como o último nível da árvore não tem filhos, a construção se inicia no último elemento da penúltima.
+    // Esse elemento se encontra bem no meio do vetor, ou seja, tam/2:
+    int meio = (int) (tam/2);
+    
+    // Para cada elemento do penúltimo nível, chama o maxHeapifica, ou seja
+    // encontra o maior elemento e coloca como pai
+    for (int i = meio - 1; i >= 0; i--) {
+        maxHeapifica(i);
+    }
+}
+
+  private void troca(int i, int j) {
     Musica temp = logs[i].clone();
-    int weightTemp = weight[i];
-    logs[i] = logs[j].clone();
-    weight[i] = weight[j];
-    logs[j] = temp.clone();
-    weight[j] = weightTemp;
+      int weightTemp = weight[i];
+      logs[i] = logs[j].clone();
+      weight[i] = weight[j];
+      logs[j] = temp.clone();
+      weight[j] = weightTemp;
   }
 
-
-  public void construir(int tamHeap){
-    for(int i = tamHeap; i > 1 && (logs[i].getId() > logs[i/2].getId()); i /= 2){
-      swap(i, i/2);
+// Função maxHeapifica
+// Essa função é o core do algoritmo.
+// Ela faz a comparação entre os valores de um Heap e ao encontrar o maior, o coloca como pai da Heap.
+// Isso faz com que qualquer Heap se torne um Max-Heap.
+private void maxHeapifica(int pai, int tam) {
+    int maior = pai,            // O maior elemento é o pai, até que se prove o contrário.
+        esquerda = 2 * pai + 1,     // Pega a posição do filho da esquerda
+        direita = 2 * pai + 2;  // e a do filho da direita.
+    
+    // Se o filho da esquerda existe, ou seja, se ele está dentro do intervalo verificável do array E
+    // Se este filho é maior que o pai (que no momento é o 'maior')
+    if (esquerda <= tam && logs[esquerda].getId() > logs[maior].getId() && weight[esquerda] >= weight[maior])
+        maior = esquerda;
+    
+    // Se o filho da direita existe, ou seja, se ele está dentro do intervalo verificável do array E
+    // Se este filho é maior que o 'maior' (que no momento pode ser o 'pai' ou o 'esquerda')
+    if (direita <= tam && logs[direita].getId() > logs[maior].getId() && weight[direita] >= weight[maior])
+        maior = direita;
+    
+    // Se ao chegar até aqui o 'pai' deixou de ser o 'maior' valor
+    if (maior != pai) {
+        troca(pai, maior);      // Faz a troca de posições
+        maxHeapifica(maior, tam);    // Continua heapificando com o valor que foi trocado
     }
-  }
-
-
-  public void reconstruir(int tamHeap){
-    int i = 1;
-    while(i <= (tamHeap/2)){
-      int filho = getMaiorFilho(i, tamHeap);
-      if(logs[i].getId() > logs[i/2].getId() && weight[i] > weight[i/2]){
-        swap(i, filho);
-        i = filho;
-      }else{
-        i = tamHeap;
-      }
-    }
-  }
-
-  public int getMaiorFilho(int i, int tamHeap) { // acho que aqui tem que ser MENOR FILHO
-    int filho;
-    if (2*i == tamHeap || logs[2*i].getId() > logs[2*i+1].getId()){
-      filho = 2*i;
-    } else if(logs[2*i].getId() == logs[2*i+1].getId()){
-      if(2*i == tamHeap || logs[2*i].getName().compareTo(logs[2*i+1].getName()) > 0){ 
-        filho = 2*i;
-      }else{
-        filho = 2*i + 1;
-      }
-    } else {
-      filho = 2*i + 1;
-    }
-    return filho;
-  }
-
-  public void heapsort(int index) throws Exception{
-    Musica wroteMusic = new Musica();
-    weight = new int[logs.length];
-    int currentWeight = 0;
-    //Alterar o vetor ignorando a posicao zero
-    Musica[] tmp = new Musica[logs.length+1]; // arraySize + 1 ?
-    for(int i = 0; i < logs.length; i++){
-        tmp[i+1] = logs[i].clone();
-        weight[i] = currentWeight;
-    }
-    logs = tmp;
-
-    //Contrucao do heap
-    for(int tamHeap = 2; tamHeap <= logs.length; tamHeap++){
-        construir(tamHeap);
-    }
-
-    while (isAvaliable()) { // enquanto ainda tem registros para serem lidos no arquivo principal
-      // Ordenar o heap
-      int tamHeap = logs.length;
-      while(tamHeap > 1){
-          swap(1, tamHeap--);
-          reconstruir(tamHeap);
-      }
-
-      // se o peso atual for diferente do peso do menor registro, tocar arquivo de output
-      if (currentWeight != weight[0]) index = (index + 1) % qntFiles;
-      // como o heap foi reordenado, agora o currentWeight sera o mesmo do 1o item do array
-      currentWeight = weight[0];
-
-      // Escrever o menor elemento
-      tempOutput[index].writeChar(' ');
-      tempOutput[index].writeInt(logs[0].toByteArray().length);
-      tempOutput[index].write(logs[0].toByteArray());
-      wroteMusic = logs[0].clone();
-
-      logs[0] = readMusic(file);
-
-      // se a musica lida for menor que a escrita, adiciona o peso
-      if (logs[0].getId() < wroteMusic.getId()) weight[0]++;
-    }
-
-    // escreve o resto dos registros que estao no logs
-    for (int i = 1; i < logs.length; i++) {
-      tempOutput[index].writeChar(' ');
-      tempOutput[index].writeInt(logs[i].toByteArray().length);
-      tempOutput[index].write(logs[i].toByteArray());
-    }
-  }
-  //  --- Heapsort ---
+}
 }
