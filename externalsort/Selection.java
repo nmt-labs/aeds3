@@ -19,6 +19,7 @@ public class Selection {
   private Musica[] logs;
   private long[] remainingBytesTmp, filePos; // posicao do ponteiro em cada arquivo temporario
   private boolean[] availableFiles;
+  private int[] weight;
 
   public Selection(int qntFiles, int arraySize) throws FileNotFoundException {
     file = new RandomAccessFile(fileName, "rw");
@@ -57,20 +58,21 @@ public class Selection {
     startTemp(); // apenas cria os arquivos temporarios
     int index = 0;
     logs = new Musica[arraySize]; // array para criar o heap
+    heapsort(index);
 
-    while (!isAvaliable()) { // enquanto o arquivo nao termina
-      logs = new Musica[blockSize];
-      readLogs(); // preenche array
-      sortArray(logs); // ordena bloco em memoria primaria
-      for (int i = 0; i < logs.length; i++) { // escreve no arquivo temporario
-        if (logs[i] != null) {
-          tempOutput[index].writeChar(' ');
-          tempOutput[index].writeInt(logs[i].toByteArray().length);
-          tempOutput[index].write(logs[i].toByteArray());
-        }
-      }
-      index = (index + 1) % qntFiles; // seleciona o proximo arquivo a armazenar o bloco
-    }
+    // while (!isAvaliable()) { // enquanto o arquivo nao termina
+    //   logs = new Musica[blockSize];
+    //   readLogs(); // preenche array
+    //   sortArray(logs); // ordena bloco em memoria primaria
+    //   for (int i = 0; i < logs.length; i++) { // escreve no arquivo temporario
+    //     if (logs[i] != null) {
+    //       tempOutput[index].writeChar(' ');
+    //       tempOutput[index].writeInt(logs[i].toByteArray().length);
+    //       tempOutput[index].write(logs[i].toByteArray());
+    //     }
+    //   }
+    //   index = (index + 1) % qntFiles; // seleciona o proximo arquivo a armazenar o bloco
+    // }
     closeTemp();
     file.close();
   }
@@ -95,7 +97,7 @@ public class Selection {
       numTmpPrim = filesToRead();
       if (numTmpPrim == 0) {
         toggleTempFiles();
-        blockSize = blockSize * qntFiles;
+        // blockSize = blockSize * qntFiles;
         numTmpSec = filesToRead();
       }
       indexInsertion = (indexInsertion + 1) % qntFiles;
@@ -173,24 +175,24 @@ public class Selection {
     }
   }
   
-  /**
-   * Read and set items in an array in primary memory
-   * @throws Exception
-   */
-  private void readLogs() throws Exception {
+  // /**
+  //  * Read and set items in an array in primary memory
+  //  * @throws Exception
+  //  */
+  // private void readLogs() throws Exception {
 
-    try {
-      for (int i = 0; i < arraySize; i++) {
-        if (!isAvaliable())
-        logs[i] = readMusic(file);
-        else
-          i = arraySize;
-      }
-    } catch (Exception e) {
-      System.err.println("Erro ao ler registros e salvar internamente");
-      e.printStackTrace();
-    }
-  }
+  //   try {
+  //     for (int i = 0; i < arraySize; i++) {
+  //       if (!isAvaliable())
+  //       logs[i] = readMusic(file);
+  //       else
+  //         i = arraySize;
+  //     }
+  //   } catch (Exception e) {
+  //     System.err.println("Erro ao ler registros e salvar internamente");
+  //     e.printStackTrace();
+  //   }
+  // }
   
   /**
    * Function that returns the number of files to read internally
@@ -379,8 +381,11 @@ public class Selection {
 
   public void swap(int i, int j) {
     Musica temp = logs[i].clone();
+    int weightTemp = weight[i];
     logs[i] = logs[j].clone();
+    weight[i] = weight[j];
     logs[j] = temp.clone();
+    weight[j] = weightTemp;
   }
 
 
@@ -395,7 +400,7 @@ public class Selection {
     int i = 1;
     while(i <= (tamHeap/2)){
       int filho = getMaiorFilho(i, tamHeap);
-      if(logs[i].getId() > logs[i/2].getId()){
+      if(logs[i].getId() > logs[i/2].getId() && weight[i] > weight[i/2]){
         swap(i, filho);
         i = filho;
       }else{
@@ -420,34 +425,54 @@ public class Selection {
     return filho;
   }
 
-  public void heapsort(){
-      //Alterar o vetor ignorando a posicao zero
-      Musica[] tmp = new Musica[logs.length+1]; // arraySize + 1 ?
-      for(int i = 0; i < logs.length; i++){
-          tmp[i+1] = logs[i].clone();
-      }
-      logs = tmp;
+  public void heapsort(int index) throws Exception{
+    Musica wroteMusic = new Musica();
+    weight = new int[logs.length];
+    int currentWeight = 0;
+    //Alterar o vetor ignorando a posicao zero
+    Musica[] tmp = new Musica[logs.length+1]; // arraySize + 1 ?
+    for(int i = 0; i < logs.length; i++){
+        tmp[i+1] = logs[i].clone();
+        weight[i] = currentWeight;
+    }
+    logs = tmp;
 
-      //Contrucao do heap
-      for(int tamHeap = 2; tamHeap <= logs.length; tamHeap++){
-          construir(tamHeap);
-      }
+    //Contrucao do heap
+    for(int tamHeap = 2; tamHeap <= logs.length; tamHeap++){
+        construir(tamHeap);
+    }
 
-      //Ordenacao propriamente dita
+    while (isAvaliable()) { // enquanto ainda tem registros para serem lidos no arquivo principal
+      // Ordenar o heap
       int tamHeap = logs.length;
       while(tamHeap > 1){
           swap(1, tamHeap--);
           reconstruir(tamHeap);
       }
 
-      // Retirar o menor elemento
+      // se o peso atual for diferente do peso do menor registro, tocar arquivo de output
+      if (currentWeight != weight[0]) index = (index + 1) % qntFiles;
+      // como o heap foi reordenado, agora o currentWeight sera o mesmo do 1o item do array
+      currentWeight = weight[0];
 
-      // //Alterar o vetor para voltar a posicao zero
-      // tmp = logs;
-      // logs = new Musica[logs.length];
-      // for(int i = 0; i < logs.length; i++){
-      //     logs[i] = tmp[i+1].clone();
-      // }
+      // Escrever o menor elemento
+      tempOutput[index].writeChar(' ');
+      tempOutput[index].writeInt(logs[0].toByteArray().length);
+      tempOutput[index].write(logs[0].toByteArray());
+      wroteMusic = logs[0].clone();
+
+      logs[0] = readMusic(file);
+
+      // se a musica lida for menor que a escrita, adiciona o peso
+      if (logs[0].getId() < wroteMusic.getId()) weight[0]++;
+    }
+
+    // escreve o resto dos registros que estao no logs
+    for (int i = 1; i < logs.length; i++) {
+      tempOutput[index].writeChar(' ');
+      tempOutput[index].writeInt(logs[i].toByteArray().length);
+      tempOutput[index].write(logs[i].toByteArray());
+    }
   }
   //  --- Heapsort ---
 }
