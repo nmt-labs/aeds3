@@ -10,7 +10,7 @@ import java.io.RandomAccessFile;
 
 import musica.Musica;
 
-public class VariableIntercalation { // C:\Users\natht\Desktop\aeds3\db\arqTemp
+public class VariableIntercalation {
   private String fileName = "db" + File.separator + "musicas.db", fileTemp = "db" + File.separator + "fileTemp" + File.separator +"outputTemp", typeTemp = ".db";
   private RandomAccessFile file;
   private int qntFiles, blockSize, lastId, numPrimRead, numPrimWrite, numTmpPrim, numTmpSec;
