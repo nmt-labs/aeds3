@@ -63,7 +63,7 @@ public class Crud {
     return null;
   }
 
-  // Método de inserção no arquivo
+  // Método de alteracao no arquivo
   public boolean update(Musica musica) throws Exception {
     file = new RandomAccessFile(fileName, "rw");
     byte[] ba;

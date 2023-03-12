@@ -1,6 +1,3 @@
-/*
- * ainda em desenvolvimento
- */
 package externalsort;
 
 import java.io.File;

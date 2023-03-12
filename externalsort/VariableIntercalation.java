@@ -1,6 +1,3 @@
-/*
- * ainda em desenvolvimento
- */
 package externalsort;
 
 import java.io.File;
@@ -11,7 +8,8 @@ import java.io.RandomAccessFile;
 import musica.Musica;
 
 public class VariableIntercalation {
-  private String fileName = "db" + File.separator + "musicas.db", fileTemp = "db" + File.separator + "fileTemp" + File.separator +"outputTemp", typeTemp = ".db";
+  private String fileName = "db" + File.separator + "musicas.db",
+      fileTemp = "db" + File.separator + "fileTemp" + File.separator + "outputTemp", typeTemp = ".db";
   private RandomAccessFile file;
   private int qntFiles, blockSize, lastId, numPrimRead, numPrimWrite, numTmpPrim, numTmpSec;
   private RandomAccessFile[] tempOutput, tempInput;
@@ -46,6 +44,7 @@ public class VariableIntercalation {
 
   /**
    * Distribute main file in n temporary files
+   * 
    * @throws Exception
    */
   private void distribute() throws Exception {
@@ -74,9 +73,10 @@ public class VariableIntercalation {
     closeTemp();
     file.close();
   }
-  
+
   /**
    * Intercalation of temp files to ordenate
+   * 
    * @throws Exception
    */
   private void intercalate() throws Exception {
@@ -90,7 +90,9 @@ public class VariableIntercalation {
       filePos[i] = 0; // comeca a ler os arquivos (posicao 0)
     }
 
-    while (!(numTmpPrim == 1 && numTmpSec == 0 || numTmpPrim == 0 && numTmpSec == 1)) { // enquanto existir apenas um arquivo para leitura -> os outros arquivos estao vazios
+    while (!(numTmpPrim == 1 && numTmpSec == 0 || numTmpPrim == 0 && numTmpSec == 1)) { // enquanto existir apenas um
+                                                                                        // arquivo para leitura -> os
+                                                                                        // outros arquivos estao vazios
       mergeFiles(indexInsertion);
       numTmpPrim = filesToRead();
       if (numTmpPrim == 0) {
@@ -115,24 +117,25 @@ public class VariableIntercalation {
       // exclui se ja existir
       sortedFile.setLength(0);
     }
-    //copia do arquivo temporario pro arquivo final
+    // copia do arquivo temporario pro arquivo final
     copyFile(fileTempFinal, sortedFile);
 
     // deletar arquivos temporarios
     deleteTempFiles();
   }
-  
+
   // -------------------------------------- utilitarios
-  
+
   /**
    * Verify if exists more data to read
+   * 
    * @return boolean
    * @throws Exception
    */
   private boolean isAvaliable() throws Exception {
     return file.getFilePointer() == file.length();
   }
-  
+
   /**
    * Create temp files
    */
@@ -140,7 +143,8 @@ public class VariableIntercalation {
     try {
       for (int i = 0; i < qntFiles; i++) {
         tempFile = new File(fileTemp + (i + numPrimRead) + typeTemp);
-        if (!tempFile.exists()) tempFile.createNewFile();
+        if (!tempFile.exists())
+          tempFile.createNewFile();
         tempOutput[i] = new RandomAccessFile(tempFile, "rw");
       }
     } catch (IOException e) {
@@ -167,17 +171,19 @@ public class VariableIntercalation {
    * Delete temp files
    */
   private void deleteTempFiles() {
-    for (int i = 0; i < qntFiles*2; i++) {
+    for (int i = 0; i < qntFiles * 2; i++) {
       tempFile = new File(fileTemp + i + typeTemp);
-      if (tempFile.exists()) tempFile.delete();
+      if (tempFile.exists())
+        tempFile.delete();
     }
   }
-  
+
   /**
    * Swap two items fron an array
+   * 
    * @param array Array of Musica
-   * @param i position to swap
-   * @param j position to swap
+   * @param i     position to swap
+   * @param j     position to swap
    */
   public void swap(Musica[] array, int i, int j) {
     Musica temp = array[i].clone();
@@ -187,20 +193,23 @@ public class VariableIntercalation {
 
   /**
    * Selection sort by name
+   * 
    * @param array Array of Musica
    */
-  public void sortArray(Musica[] array){ // by name
+  public void sortArray(Musica[] array) { // by name
     for (int i = (array.length - 1); i > 0; i--) {
       if (array[i] != null) { // caso o array tenha espacos vazios
         for (int j = 0; j < i; j++) {
-          if (array[i].getId() < array[j].getId()) swap(array, i, j);
+          if (array[i].getId() < array[j].getId())
+            swap(array, i, j);
         }
       }
     }
   }
-  
+
   /**
    * Read and set items in an array in primary memory
+   * 
    * @throws Exception
    */
   private void readLogs() throws Exception {
@@ -208,7 +217,7 @@ public class VariableIntercalation {
     try {
       for (int i = 0; i < blockSize; i++) {
         if (!isAvaliable())
-        logs[i] = readMusic(file);
+          logs[i] = readMusic(file);
         else
           i = blockSize;
       }
@@ -217,9 +226,10 @@ public class VariableIntercalation {
       e.printStackTrace();
     }
   }
-  
+
   /**
    * Function that returns the number of files to read internally
+   * 
    * @return total de arquivos disponiveis para ler
    */
   private int filesToRead() {
@@ -237,7 +247,7 @@ public class VariableIntercalation {
     }
     return totFiles;
   }
-  
+
   /**
    * Alternar entre arquivos temporarios que estão sendo ordenados internamente
    * 
@@ -260,6 +270,7 @@ public class VariableIntercalation {
 
   /**
    * Get index id from temp file
+   * 
    * @param index parametro de indice do arquivo
    * @return
    */
@@ -270,7 +281,7 @@ public class VariableIntercalation {
       return ((index - 1) + numPrimRead);
     }
   }
-  
+
   /**
    * Merge logs from n files in one file
    * 
@@ -281,11 +292,12 @@ public class VariableIntercalation {
     Musica[] compareMusic = new Musica[qntFiles];
     Musica wroteMusic = new Musica();
     int smallestValueIndex, wroteMusicId = 0; // index do menor valor
-    
-    // iniciando o vetor de musicas -> armazena a primeira musica de cada arquivo no vetor
+
+    // iniciando o vetor de musicas -> armazena a primeira musica de cada arquivo no
+    // vetor
     // iniciando contador -> nenhuma musica ainda foi colocada no arquivo de escrita
     for (int i = 0; i < qntFiles; i++) {
-      if (filePos[i] < tempInput[i].length()){
+      if (filePos[i] < tempInput[i].length()) {
         compareMusic[i] = readMusicMerge(tempInput[i], filePos[i]);
       }
 
@@ -293,69 +305,86 @@ public class VariableIntercalation {
       availableFiles[i] = true;
     }
 
-    while (isFilesAvailables() && !isAllFilesAllRead()) { // enquanto ainda existe bloco de algum arquivo para a leitura -> algum elemento do vetor de contador e difernete do tamanho do bloco
+    while (isFilesAvailables() && !isAllFilesAllRead()) { // enquanto ainda existe bloco de algum arquivo para a leitura
+                                                          // -> algum elemento do vetor de contador e difernete do
+                                                          // tamanho do bloco
       smallestValueIndex = firstAvailableFileToMerge(); // recebe menor index do bloco ainda valido
       filePos[wroteMusicId] = tempInput[wroteMusicId].getFilePointer();
       // encontra a menor musica do vetor
       for (int i = 0; i < compareMusic.length; i++) {
-        if (availableFiles[i] == true && filePos[i] < tempInput[i].length()){ // pula o arquivo que ja teve seu bloco todo lido
-          if (compareMusic[i].getId() <= compareMusic[smallestValueIndex].getId()) smallestValueIndex = i;
+        if (availableFiles[i] == true && filePos[i] < tempInput[i].length()) { // pula o arquivo que ja teve seu bloco
+                                                                               // todo lido
+          if (compareMusic[i].getId() <= compareMusic[smallestValueIndex].getId())
+            smallestValueIndex = i;
         }
       }
       // colocar menor valor no arquivo de escrita
       tempOutput[index].writeChar(' ');
       tempOutput[index].writeInt(compareMusic[smallestValueIndex].toByteArray().length);
       tempOutput[index].write(compareMusic[smallestValueIndex].toByteArray());
-      //System.out.println("MUSICA QUE FOI ESCRITA NO ARQUIVO"+index+": "+compareMusic[smallestValueIndex].getId()+" "+compareMusic[smallestValueIndex].getName()); 
+
       wroteMusic = compareMusic[smallestValueIndex].clone();
       wroteMusicId = smallestValueIndex;
-      
-      
+
       // se nao chegou no fim do arquivo, le a proxima musica
-      if(filePos[smallestValueIndex] < tempInput[smallestValueIndex].length()){ 
-        compareMusic[smallestValueIndex] = readMusicMerge(tempInput[smallestValueIndex], filePos[smallestValueIndex]); // le proxima musica do arquivo inserido
+      if (filePos[smallestValueIndex] < tempInput[smallestValueIndex].length()) {
+        compareMusic[smallestValueIndex] = readMusicMerge(tempInput[smallestValueIndex], filePos[smallestValueIndex]); // le
+                                                                                                                       // proxima
+                                                                                                                       // musica
+                                                                                                                       // do
+                                                                                                                       // arquivo
+                                                                                                                       // inserido
         // se musica lida for menor que a musica escrita, desconsidera o arquivo
-        if(wroteMusic.getId() > compareMusic[smallestValueIndex].getId()) availableFiles[smallestValueIndex] = false;
+        if (wroteMusic.getId() > compareMusic[smallestValueIndex].getId())
+          availableFiles[smallestValueIndex] = false;
       }
     }
   }
 
   /**
    * Verify if theres at least one file available to merge
+   * 
    * @return
    * @throws IOException
    */
   private boolean isFilesAvailables() throws IOException {
     int counter = 0;
-    for(int i = 0; i < availableFiles.length; i++){
-      if (availableFiles[i] == false) counter++;
+    for (int i = 0; i < availableFiles.length; i++) {
+      if (availableFiles[i] == false)
+        counter++;
     }
     // se todos os arquivos forem false
-    if (counter >= availableFiles.length) return false;
-    else return true;
+    if (counter >= availableFiles.length)
+      return false;
+    else
+      return true;
   }
 
   private boolean isAllFilesAllRead() throws IOException {
     boolean[] verify = new boolean[qntFiles];
 
     for (int i = 0; i < verify.length; i++) {
-      if (filePos[i] >= tempInput[i].length()) verify[i] = true;
+      if (filePos[i] >= tempInput[i].length())
+        verify[i] = true;
     }
     for (int i = 0; i < verify.length; i++) {
-      if (verify[i] == false) return false;
+      if (verify[i] == false)
+        return false;
     }
     return true;
   }
 
-  private int firstAvailableFileToMerge(){
-    for(int i = 0; i < availableFiles.length; i++){
-      if (availableFiles[i] == true) return i;
+  private int firstAvailableFileToMerge() {
+    for (int i = 0; i < availableFiles.length; i++) {
+      if (availableFiles[i] == true)
+        return i;
     }
     return -1;
   }
-  
+
   /**
    * Read Music from file in a specific position
+   * 
    * @param input
    * @param pos
    * @return
@@ -365,9 +394,10 @@ public class VariableIntercalation {
     input.seek(pos);
     return readMusic(input);
   }
-  
+
   /**
    * Read Music from file
+   * 
    * @param file
    * @return
    * @throws Exception
@@ -378,15 +408,16 @@ public class VariableIntercalation {
     int sizeReg = file.readInt();
     byte[] bytearray = new byte[sizeReg];
     file.read(bytearray);
-     if (lapide != '*') {
+    if (lapide != '*') {
       reg = new Musica();
       reg.fromByteArray(bytearray);
-     }
+    }
     return reg;
   }
 
   /**
    * Copy file
+   * 
    * @param tmp
    * @param target
    * @throws Exception
@@ -394,10 +425,10 @@ public class VariableIntercalation {
   private void copyFile(RandomAccessFile tmp, RandomAccessFile target) throws Exception {
     target.writeInt(lastId);
     while (tmp.getFilePointer() != tmp.length()) {
-        Musica musica = readMusic(tmp);
-        target.writeChar(' ');
-        target.writeInt(musica.toByteArray().length);
-        target.write(musica.toByteArray());
+      Musica musica = readMusic(tmp);
+      target.writeChar(' ');
+      target.writeInt(musica.toByteArray().length);
+      target.write(musica.toByteArray());
     }
   }
 }

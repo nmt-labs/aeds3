@@ -129,6 +129,9 @@ public class Menu {
           }
         
         break;
+
+        default: System.out.println("Comando inválido");
+          break;
     }
   }
 
