@@ -31,6 +31,10 @@ public class VariableIntercalation {
     this.numTmpSec = -1;
   }
 
+  /**
+   * Variable intercalation sort
+   * @throws Exception
+   */
   public void sort() throws Exception {
     // distribui os registros nos arquivos temporarios
     System.out.println("Distribuindo arquivo em arquivos temporarios...");
@@ -249,7 +253,7 @@ public class VariableIntercalation {
   }
 
   /**
-   * Alternar entre arquivos temporarios que estão sendo ordenados internamente
+   * Toggle temp files
    * 
    * @throws Exception
    */
@@ -308,6 +312,7 @@ public class VariableIntercalation {
     while (isFilesAvailables() && !isAllFilesAllRead()) { // enquanto ainda existe bloco de algum arquivo para a leitura
                                                           // -> algum elemento do vetor de contador e difernete do
                                                           // tamanho do bloco
+
       smallestValueIndex = firstAvailableFileToMerge(); // recebe menor index do bloco ainda valido
       filePos[wroteMusicId] = tempInput[wroteMusicId].getFilePointer();
       // encontra a menor musica do vetor
@@ -328,12 +333,8 @@ public class VariableIntercalation {
 
       // se nao chegou no fim do arquivo, le a proxima musica
       if (filePos[smallestValueIndex] < tempInput[smallestValueIndex].length()) {
-        compareMusic[smallestValueIndex] = readMusicMerge(tempInput[smallestValueIndex], filePos[smallestValueIndex]); // le
-                                                                                                                       // proxima
-                                                                                                                       // musica
-                                                                                                                       // do
-                                                                                                                       // arquivo
-                                                                                                                       // inserido
+        // le proxima musica do arquivo inserido
+        compareMusic[smallestValueIndex] = readMusicMerge(tempInput[smallestValueIndex], filePos[smallestValueIndex]);
         // se musica lida for menor que a musica escrita, desconsidera o arquivo
         if (wroteMusic.getId() > compareMusic[smallestValueIndex].getId())
           availableFiles[smallestValueIndex] = false;
@@ -360,6 +361,11 @@ public class VariableIntercalation {
       return true;
   }
 
+  /**
+   * Verify if all temp files are read
+   * @return
+   * @throws IOException
+   */
   private boolean isAllFilesAllRead() throws IOException {
     boolean[] verify = new boolean[qntFiles];
 
@@ -374,6 +380,10 @@ public class VariableIntercalation {
     return true;
   }
 
+  /**
+   * Find first file available to merge
+   * @return
+   */
   private int firstAvailableFileToMerge() {
     for (int i = 0; i < availableFiles.length; i++) {
       if (availableFiles[i] == true)

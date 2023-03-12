@@ -32,6 +32,10 @@ public class Selection {
     this.numTmpSec = -1;
   }
 
+  /**
+   * Selection sort
+   * @throws Exception
+   */
   public void sort() throws Exception {
     // distribui os registros nos arquivos temporarios
     System.out.println("Distribuindo arquivo em arquivos temporarios...");
@@ -211,7 +215,7 @@ public class Selection {
   }
 
   /**
-   * Alternar entre arquivos temporarios que estão sendo ordenados internamente
+   * Toggle temp files
    * 
    * @throws Exception
    */
