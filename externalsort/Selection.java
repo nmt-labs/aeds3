@@ -58,6 +58,7 @@ public class Selection {
     startTemp(); // apenas cria os arquivos temporarios
     int index = 0;
     logs = new Musica[arraySize]; // array para criar o heap
+    weight = new int[arraySize];
     readLogs();
     heapsort(index);
 
@@ -372,12 +373,13 @@ public class Selection {
     Musica wroteMusic = new Musica();
     weight = new int[logs.length];
     int currentWeight = 0;
-    int tam = logs.length - 1;     // o tamanho deste vetor é armazenado em 'tam', que também é global
+    int tam;     // o tamanho deste vetor é armazenado em 'tam', que também é global
       
     // Chama a função para construir um Max-Heap
     while (!isAvaliable()) { // enquanto ainda tem registros para serem lidos no arquivo principal
+      tam = logs.length - 1;
       constroiHeap(tam);
-      for (int i = 0; i < logs.length; i++) System.out.println(logs[i].getId());
+      
       // Assim que a Max-Heap foi criada, o processo de ordenação pode começar.
       // Através desse loop que a troca do valor do topo com o valor da última posição da Heap é feita
       for (int i = tam; i > 0; i--) {
@@ -385,6 +387,7 @@ public class Selection {
         tam -= 1;           // Diminui 'tam' para não alterar a posição do maior valor nas próximas iterações
         maxHeapifica(0, tam);    // Como existe um valor menor no topo, é necessário heapificar novamente a árvore inteira
       }
+      for (int j = 0; j < logs.length; j++) System.out.println(logs[j].getId());
 
       // se o peso atual for diferente do peso do menor registro, tocar arquivo de output
       if (currentWeight != weight[0]) index = (index + 1) % qntFiles;
@@ -404,6 +407,7 @@ public class Selection {
       if (logs[0].getId() < wroteMusic.getId()) weight[0]++;
     }
 
+    tam = logs.length - 1;
     // ultima ordenacao
     for (int i = tam; i > 0; i--) {
       troca(0, tam);      // Troca a posição
@@ -416,6 +420,9 @@ public class Selection {
       tempOutput[index].writeChar(' ');
       tempOutput[index].writeInt(logs[i].toByteArray().length);
       tempOutput[index].write(logs[i].toByteArray());
+
+      wroteMusic = logs[i].clone();
+      System.out.println("ULTIMA MUSICA ESCRITA: "+wroteMusic.getId());
     }
   }
 
