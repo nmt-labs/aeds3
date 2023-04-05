@@ -2,26 +2,26 @@ package bplustree;
 
 public class No {
   public int degree;
-  public Key[] chaves;
-  public No[] filhos;
-  public int nChaves;
-  public boolean folha;
-  public No irmao;
+  public Key[] keys;
+  public No[] children;
+  public int nKeys;
+  public boolean leaf;
+  public No sibling;
 
   public No(int degree) {
     this.degree = degree;
-    this.chaves = new Key[degree - 1];
-    this.filhos = new No[degree];
-    this.nChaves = 0;
-    this.folha = true;
-    this.irmao = null; // ponteiro apenas pra folha seguinte
+    this.keys = new Key[degree - 1];
+    this.children = new No[degree];
+    this.nKeys = 0;
+    this.leaf = true;
+    this.sibling = null; // ponteiro apenas pra leaf seguinte
   }
 
   public void print() {
     System.out.print("[");
-    for (int i = 0; i < nChaves; i++) {
-      System.out.print(chaves[i] == null ? "null" : chaves[i].id);
-      if (i < nChaves - 1) {
+    for (int i = 0; i < nKeys; i++) {
+      System.out.print(keys[i] == null ? "null" : keys[i].id);
+      if (i < nKeys - 1) {
         System.out.print(", ");
       }
     }
@@ -29,17 +29,17 @@ public class No {
   }
 
   public No clone() {
-    No novo = new No(degree);
+    No newKnot = new No(degree);
 
-    novo.nChaves = nChaves;
-    novo.folha = folha;
-    novo.irmao = irmao;
-    for (int i = 0; i < nChaves; i++) {
-      novo.chaves[i] = chaves[i];
+    newKnot.nKeys = nKeys;
+    newKnot.leaf = leaf;
+    newKnot.sibling = sibling;
+    for (int i = 0; i < nKeys; i++) {
+      newKnot.keys[i] = keys[i];
     }
-    for (int i = 0; i <= nChaves; i++) {
-      novo.filhos[i] = filhos[i];
+    for (int i = 0; i <= nKeys; i++) {
+      newKnot.children[i] = children[i];
     }
-    return novo;
+    return newKnot;
   }
 }

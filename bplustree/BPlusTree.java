@@ -21,108 +21,108 @@ public class BPlusTree {
   }
 
   private No insert(No no, No parent, int id, long pointer) {
-    // Se o nó for folha, insere a chave
-    if (no.folha) {
+    // Se o nó for leaf, insere a chave
+    if (no.leaf) {
       // Se o nó estiver cheio, divide o nó
-      if (no.nChaves + 1 == no.degree) {
+      if (no.nKeys + 1 == no.degree) {
         int i = 0;
-        while (parent != null && i < parent.nChaves && id > parent.chaves[i].id) {
+        while (parent != null && i < parent.nKeys && id > parent.keys[i].id) {
           i++; // Posição do filho
         }
         if (parent == null) {
-          parent = dividir(no, parent, i, id, pointer);
+          parent = divide(no, parent, i, id, pointer);
           this.nElements++;
           return parent;
-        } else if (parent.nChaves + 1 == parent.degree) { // esse bloco e identico ao anterior, pq so nao colocou um || ?
-          parent = dividir(no, parent, i, id, pointer);
+        } else if (parent.nKeys + 1 == parent.degree) { // esse bloco e identico ao anterior, pq so nao colocou um || ?
+          parent = divide(no, parent, i, id, pointer);
           this.nElements++;
           return parent;
         } else { // se o pai existe e nao ta cheio
-          dividir(no, parent, i, id, pointer);
+          divide(no, parent, i, id, pointer);
           this.nElements++;
         }
       } else { // se nao estiver cheio insere normal
-        no = insertChave(no, id, pointer);
+        no = insertKey(no, id, pointer);
         this.nElements++;
       }
 
     } else {
-      // Se o nó não for folha, procura o filho onde a chave deve ser inserida
+      // Se o nó não for leaf, procura o filho onde a chave deve ser inserida
       int i = 0;
-      while (i < no.nChaves && id > no.chaves[i].id) {
+      while (i < no.nKeys && id > no.keys[i].id) {
         i++;
       }
-      if (no != null && no.nChaves + 1 == no.degree && no.filhos[i].folha
-          && no.filhos[i].nChaves + 1 == no.filhos[i].degree) { // procura ate achar um >filho< que seja folha e tenha espaco
-            // se for folha mas nao tem espaco para inserir
-        no = insert(no.filhos[i], no, id, pointer);
+      if (no != null && no.nKeys + 1 == no.degree && no.children[i].leaf
+          && no.children[i].nKeys + 1 == no.children[i].degree) { // procura ate achar um >filho< que seja leaf e tenha espaco
+            // se for leaf mas nao tem espaco para inserir
+        no = insert(no.children[i], no, id, pointer);
       } else {
-        no.filhos[i] = insert(no.filhos[i], no, id, pointer); // filho continua sendo filho e insere no filho
+        no.children[i] = insert(no.children[i], no, id, pointer); // filho continua sendo filho e insere no filho
       }
     }
     return no; // retorna filho ou pai?
   }
 
-  private No insertChave(No no, int id, long pointer) {
-    int i = no.nChaves - 1;
-    while (i >= 0 && no.chaves[i] != null && id < no.chaves[i].id) {
-      no.chaves[i + 1] = no.chaves[i];
+  private No insertKey(No no, int id, long pointer) {
+    int i = no.nKeys - 1;
+    while (i >= 0 && no.keys[i] != null && id < no.keys[i].id) {
+      no.keys[i + 1] = no.keys[i];
       i--;
     }
-    no.chaves[i + 1] = new Key(id, pointer);
-    no.nChaves++;
+    no.keys[i + 1] = new Key(id, pointer);
+    no.nKeys++;
 
     return no;
   }
 
-  private No dividir(No no, No parent, int i, int id, long pointer) {
+  private No divide(No no, No parent, int i, int id, long pointer) {
     // Cria um novo nó
-    No novo = new No(no.degree);
-    // Copia a metade das chaves para o novo nó
-    int meio = no.nChaves / 2;
+    No newKnot = new No(no.degree);
+    // Copia a metade das keys para o newKnot nó
+    int half = no.nKeys / 2;
 
-    // cria novo no
-    for (int j = meio; j < no.degree - 1; j++) {
-      novo.chaves[j - meio] = no.chaves[j];
-      novo.nChaves++; // aumenta qnt de elementos da pagina nova
-      no.nChaves--; // diminui qnt de elementos da pagina principal
+    // cria newKnot no
+    for (int j = half; j < no.degree - 1; j++) {
+      newKnot.keys[j - half] = no.keys[j];
+      newKnot.nKeys++; // aumenta qnt de elementos da pagina nova
+      no.nKeys--; // diminui qnt de elementos da pagina principal
     }
     // Insere a nova chave no nó correto
-    if (id < no.chaves[meio].id) {
-      no = insertChave(no, id, pointer);
+    if (id < no.keys[half].id) {
+      no = insertKey(no, id, pointer);
     } else {
-      novo = insertChave(novo, id, pointer);
+      newKnot = insertKey(newKnot, id, pointer);
     }
 
-    // Se o nó não for folha, copia a metade dos filhos para o novo nó
-    if (!no.folha) {
-      for (int j = meio; j < no.degree; j++) {
-        novo.filhos[j - meio] = no.filhos[j];
+    // Se o nó não for leaf, copia a metade dos children para o newKnot nó
+    if (!no.leaf) {
+      for (int j = half; j < no.degree; j++) {
+        newKnot.children[j - half] = no.children[j];
       }
     }
 
-    // Se o nó for folha, atualiza o ponteiro para o próximo nó
-    if (no.folha) {
-      no.irmao = novo;
+    // Se o nó for leaf, atualiza o ponteiro para o próximo nó
+    if (no.leaf) {
+      no.sibling = newKnot;
     }
-    // Se o nó não tiver parent, cria um novo nó parent
+    // Se o nó não tiver parent, cria um newKnot nó parent
     if (parent == null) {
       parent = new No(no.degree);
-      parent.filhos[0] = no;
-      parent.folha = false;
+      parent.children[0] = no;
+      parent.leaf = false;
     }
-    // Insere a chave do meio do nó no parent | ia entender mais se fosse a primeira chave do no novo, mas ok ne
-    if (parent.nChaves + 1 == parent.degree) {
-      No tmp = dividir(parent.clone(), null, 0, no.chaves[meio].id, no.chaves[meio].pointer);
+    // Insere a chave do half do nó no parent | ia entender mais se fosse a primeira chave do no newKnot, mas ok ne
+    if (parent.nKeys + 1 == parent.degree) {
+      No tmp = divide(parent.clone(), null, 0, no.keys[half].id, no.keys[half].pointer);
 
       for (int j = 0; j < tmp.degree; j++) {
-        if (tmp.filhos[j] != null) {
+        if (tmp.children[j] != null) {
           for (int k = 0; k < tmp.degree; k++) {
-            if (tmp.filhos[j].chaves[tmp.filhos[j].nChaves - 1].id >= parent.filhos[k].chaves[0].id &&
-                (j == 0 || tmp.filhos[j - 1].chaves[tmp.filhos[j - 1].nChaves - 1].id < parent.filhos[k].chaves[0].id)) {
-              tmp.filhos[j].filhos[k - (3 * j)] = parent.filhos[k];
+            if (tmp.children[j].keys[tmp.children[j].nKeys - 1].id >= parent.children[k].keys[0].id &&
+                (j == 0 || tmp.children[j - 1].keys[tmp.children[j - 1].nKeys - 1].id < parent.children[k].keys[0].id)) {
+              tmp.children[j].children[k - (3 * j)] = parent.children[k];
               if (k == tmp.degree - 1) {
-                tmp.filhos[j].filhos[(k + 1) - (3 * j)] = novo;
+                tmp.children[j].children[(k + 1) - (3 * j)] = newKnot;
               }
             }
           }
@@ -133,85 +133,85 @@ public class BPlusTree {
 
       return parent;
     } else {
-      parent = insertChave(parent, no.chaves[meio].id, no.chaves[meio].pointer); // ao inves de no.chaves[meio].id poderia ser novo.chaves[0].id?
-      // Insere o novo nó no parent
-      for (int j = parent.nChaves - 1; j > i; j--) {
-        parent.filhos[j + 1] = parent.filhos[j];
+      parent = insertKey(parent, no.keys[half].id, no.keys[half].pointer); // ao inves de no.keys[half].id poderia ser newKnot.keys[0].id?
+      // Insere o newKnot nó no parent
+      for (int j = parent.nKeys - 1; j > i; j--) {
+        parent.children[j + 1] = parent.children[j];
       }
-      parent.filhos[i + 1] = novo;
+      parent.children[i + 1] = newKnot;
 
       return parent;
     }
   }
 
-  public long buscar(int id) {
-    return buscar(this.root, id);
+  public long search(int id) {
+    return search(this.root, id);
   }
 
-  private long buscar(No no, int id) {
-    // Se o nó for folha, retorna o ponteiro da chave
-    if (no.folha) {
-      for (int i = 0; i < no.nChaves; i++) {
-        if (no.chaves[i].id == id) {
-          return no.chaves[i].pointer;
+  private long search(No no, int id) {
+    // Se o nó for leaf, retorna o ponteiro da chave
+    if (no.leaf) {
+      for (int i = 0; i < no.nKeys; i++) {
+        if (no.keys[i].id == id) {
+          return no.keys[i].pointer;
         }
       }
       return -1;
     } else {
-      // Se o nó não for folha, procura o filho onde a chave deve estar
+      // Se o nó não for leaf, procura o filho onde a chave deve estar
       int i = 0;
-      while (i < no.nChaves && id > no.chaves[i].id) {
+      while (i < no.nKeys && id > no.keys[i].id) {
         i++;
       }
-      return buscar(no.filhos[i], id);
+      return search(no.children[i], id);
     }
   }
 
-  public long[] buscar(int id, int tamanho) {
-    return buscar(this.root, id, tamanho);
+  public long[] search(int id, int tamanho) {
+    return search(this.root, id, tamanho);
   }
 
-  private long[] buscar(No no, int id, int tamanho) {
-    // Se o nó for folha, retorna os ponteiros das chaves
-    if (no.folha) {
-      long[] ponteiros = new long[tamanho];
+  private long[] search(No no, int id, int tamanho) {
+    // Se o nó for leaf, retorna os ponteiros das keys
+    if (no.leaf) {
+      long[] pointers = new long[tamanho];
       int j = 0;
-      // Percorre as chaves do nó e dos irmãos
-      for (No n = no; n != null; n = n.irmao) {
-        for (int i = 0; i < n.nChaves; i++) {
-          if (n.chaves[i].id <= id) {
-            ponteiros[j] = n.chaves[i].pointer;
+      // Percorre as keys do nó e dos irmãos
+      for (No n = no; n != null; n = n.sibling) {
+        for (int i = 0; i < n.nKeys; i++) {
+          if (n.keys[i].id <= id) {
+            pointers[j] = n.keys[i].pointer;
             j++;
             if (j == tamanho) {
-              return ponteiros;
+              return pointers;
             }
           }
         }
       }
-      return ponteiros;
+      return pointers;
     } else {
-      // Se o nó não for folha, procura o filho onde a chave deve estar
+      // Se o nó não for leaf, procura o filho onde a chave deve estar
       int i = 0;
-      while (i < no.nChaves && id > no.chaves[i].id) {
+      while (i < no.nKeys && id > no.keys[i].id) {
         i++;
       }
-      return buscar(no.filhos[i], id, tamanho);
+      return search(no.children[i], id, tamanho);
     }
   }
 
-  public void imprimir() {
+  public void print() {
     System.out.println("Imprimindo arvore:");
-    imprimir(this.root, 0);
+    print(this.root, 0);
     System.out.println("\n----\n");
   }
 
-  private void imprimir(No no, int nivel) {
+  private void print(No no, int level) {
     if (no != null) {
-      System.out.print(nivel + ": ");
+      System.out.print(level + ": ");
       no.print();
       System.out.println("");
       for (int i = 0; i < no.degree; i++) {
-        imprimir(no.filhos[i], nivel + 1);
+        print(no.children[i], level + 1);
       }
     }
   }
