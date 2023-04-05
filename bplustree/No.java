@@ -1,20 +1,20 @@
 package bplustree;
 
 public class No {
-  public int ordem;
+  public int degree;
   public Key[] chaves;
   public No[] filhos;
   public int nChaves;
   public boolean folha;
   public No irmao;
 
-  public No(int ordem) {
-    this.ordem = ordem;
-    this.chaves = new Key[ordem - 1];
-    this.filhos = new No[ordem];
+  public No(int degree) {
+    this.degree = degree;
+    this.chaves = new Key[degree - 1];
+    this.filhos = new No[degree];
     this.nChaves = 0;
     this.folha = true;
-    this.irmao = null;
+    this.irmao = null; // ponteiro apenas pra folha seguinte
   }
 
   public void print() {
@@ -29,7 +29,8 @@ public class No {
   }
 
   public No clone() {
-    No novo = new No(ordem);
+    No novo = new No(degree);
+
     novo.nChaves = nChaves;
     novo.folha = folha;
     novo.irmao = irmao;
