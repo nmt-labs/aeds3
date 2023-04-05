@@ -33,17 +33,16 @@ public class BPlusTree {
           parent = dividir(no, parent, i, id, pointer);
           this.nElements++;
           return parent;
-        } else if (parent.nChaves + 1 == parent.degree) {
+        } else if (parent.nChaves + 1 == parent.degree) { // esse bloco e identico ao anterior, pq so nao colocou um || ?
           parent = dividir(no, parent, i, id, pointer);
           this.nElements++;
           return parent;
-        } else {
+        } else { // se o pai existe e nao ta cheio
           dividir(no, parent, i, id, pointer);
           this.nElements++;
-
         }
       } else { // se nao estiver cheio insere normal
-        no = insertChave(no, id, pointer); // aqui e quando finalmete e inserido
+        no = insertChave(no, id, pointer);
         this.nElements++;
       }
 
@@ -135,7 +134,7 @@ public class BPlusTree {
       return parent;
     } else {
       parent = insertChave(parent, no.chaves[meio].id, no.chaves[meio].pointer); // ao inves de no.chaves[meio].id poderia ser novo.chaves[0].id?
-      // Insere o novo nó no parent | nao entendi
+      // Insere o novo nó no parent
       for (int j = parent.nChaves - 1; j > i; j--) {
         parent.filhos[j + 1] = parent.filhos[j];
       }
