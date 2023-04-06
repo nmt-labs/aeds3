@@ -2,12 +2,12 @@ package bplustree;
 
 public class BPlusTree {
   private int degree;
-  private No root;
+  private Node root;
   private int nElements;
 
   public BPlusTree(int degree) {
     this.degree = degree;
-    this.root = new No(degree);
+    this.root = new Node(degree);
     this.nElements = 0;
   }
 
@@ -20,8 +20,8 @@ public class BPlusTree {
     this.root = insert(this.root, null, id, pointer);
   }
 
-  private No insert(No no, No parent, int id, long pointer) {
-    // Se o nó for leaf, insere a chave
+  private Node insert(Node no, Node parent, int id, long pointer) {
+    // Se o nó for folha, insere a chave
     if (no.leaf) {
       // Se o nó estiver cheio, divide o nó
       if (no.nKeys + 1 == no.degree) {
@@ -63,7 +63,7 @@ public class BPlusTree {
     return no; // retorna filho ou pai?
   }
 
-  private No insertKey(No no, int id, long pointer) {
+  private Node insertKey(Node no, int id, long pointer) {
     int i = no.nKeys - 1;
     while (i >= 0 && no.keys[i] != null && id < no.keys[i].id) {
       no.keys[i + 1] = no.keys[i];
@@ -75,45 +75,45 @@ public class BPlusTree {
     return no;
   }
 
-  private No divide(No no, No parent, int i, int id, long pointer) {
+  private Node divide(Node no, Node parent, int i, int id, long pointer) {
     // Cria um novo nó
-    No newKnot = new No(no.degree);
-    // Copia a metade das keys para o newKnot nó
+    Node newNode = new Node(no.degree);
+    // Copia a metade das chaves para o novo nó
     int half = no.nKeys / 2;
 
-    // cria newKnot no
+    // cria newNode no
     for (int j = half; j < no.degree - 1; j++) {
-      newKnot.keys[j - half] = no.keys[j];
-      newKnot.nKeys++; // aumenta qnt de elementos da pagina nova
+      newNode.keys[j - half] = no.keys[j];
+      newNode.nKeys++; // aumenta qnt de elementos da pagina nova
       no.nKeys--; // diminui qnt de elementos da pagina principal
     }
     // Insere a nova chave no nó correto
     if (id < no.keys[half].id) {
       no = insertKey(no, id, pointer);
     } else {
-      newKnot = insertKey(newKnot, id, pointer);
+      newNode = insertKey(newNode, id, pointer);
     }
 
-    // Se o nó não for leaf, copia a metade dos children para o newKnot nó
+    // Se o nó não for leaf, copia a metade dos children para o newNode nó
     if (!no.leaf) {
       for (int j = half; j < no.degree; j++) {
-        newKnot.children[j - half] = no.children[j];
+        newNode.children[j - half] = no.children[j];
       }
     }
 
     // Se o nó for leaf, atualiza o ponteiro para o próximo nó
     if (no.leaf) {
-      no.sibling = newKnot;
+      no.sibling = newNode;
     }
-    // Se o nó não tiver parent, cria um newKnot nó parent
+    // Se o nó não tiver parent, cria um newNode nó parent
     if (parent == null) {
-      parent = new No(no.degree);
+      parent = new Node(no.degree);
       parent.children[0] = no;
       parent.leaf = false;
     }
-    // Insere a chave do half do nó no parent | ia entender mais se fosse a primeira chave do no newKnot, mas ok ne
+    // Insere a chave do half do nó no parent | ia entender mais se fosse a primeira chave do no newNode, mas ok ne
     if (parent.nKeys + 1 == parent.degree) {
-      No tmp = divide(parent.clone(), null, 0, no.keys[half].id, no.keys[half].pointer);
+      Node tmp = divide(parent.clone(), null, 0, no.keys[half].id, no.keys[half].pointer);
 
       for (int j = 0; j < tmp.degree; j++) {
         if (tmp.children[j] != null) {
@@ -122,7 +122,7 @@ public class BPlusTree {
                 (j == 0 || tmp.children[j - 1].keys[tmp.children[j - 1].nKeys - 1].id < parent.children[k].keys[0].id)) {
               tmp.children[j].children[k - (3 * j)] = parent.children[k];
               if (k == tmp.degree - 1) {
-                tmp.children[j].children[(k + 1) - (3 * j)] = newKnot;
+                tmp.children[j].children[(k + 1) - (3 * j)] = newNode;
               }
             }
           }
@@ -133,12 +133,12 @@ public class BPlusTree {
 
       return parent;
     } else {
-      parent = insertKey(parent, no.keys[half].id, no.keys[half].pointer); // ao inves de no.keys[half].id poderia ser newKnot.keys[0].id?
-      // Insere o newKnot nó no parent
+      parent = insertKey(parent, no.keys[half].id, no.keys[half].pointer); // ao inves de no.keys[half].id poderia ser newNode.keys[0].id?
+      // Insere o newNode nó no parent
       for (int j = parent.nKeys - 1; j > i; j--) {
         parent.children[j + 1] = parent.children[j];
       }
-      parent.children[i + 1] = newKnot;
+      parent.children[i + 1] = newNode;
 
       return parent;
     }
@@ -148,7 +148,7 @@ public class BPlusTree {
     return search(this.root, id);
   }
 
-  private long search(No no, int id) {
+  private long search(Node no, int id) {
     // Se o nó for leaf, retorna o ponteiro da chave
     if (no.leaf) {
       for (int i = 0; i < no.nKeys; i++) {
@@ -171,13 +171,13 @@ public class BPlusTree {
     return search(this.root, id, tamanho);
   }
 
-  private long[] search(No no, int id, int tamanho) {
+  private long[] search(Node no, int id, int tamanho) {
     // Se o nó for leaf, retorna os ponteiros das keys
     if (no.leaf) {
       long[] pointers = new long[tamanho];
       int j = 0;
       // Percorre as keys do nó e dos irmãos
-      for (No n = no; n != null; n = n.sibling) {
+      for (Node n = no; n != null; n = n.sibling) {
         for (int i = 0; i < n.nKeys; i++) {
           if (n.keys[i].id <= id) {
             pointers[j] = n.keys[i].pointer;
@@ -205,7 +205,7 @@ public class BPlusTree {
     System.out.println("\n----\n");
   }
 
-  private void print(No no, int level) {
+  private void print(Node no, int level) {
     if (no != null) {
       System.out.print(level + ": ");
       no.print();
