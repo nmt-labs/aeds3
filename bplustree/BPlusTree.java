@@ -75,45 +75,56 @@ public class BPlusTree {
     return no;
   }
 
-  private Node divide(Node no, Node parent, int i, int id, long pointer) {
+  /**
+   * ele escolheu subir com o item do meio do no a esquerda (menor) ao inves do primeiro a direita (maior). na divisao, a maior parte da
+   * divisao fica no no novo
+   * -> eu subiria com o priemiro da direita e deixaria a meior parte da divisao no no antigo
+   * @param node
+   * @param parent
+   * @param i
+   * @param id
+   * @param pointer
+   * @return
+   */
+  private Node divide(Node node, Node parent, int i, int id, long pointer) {
     // Cria um novo nó
-    Node newNode = new Node(no.degree);
+    Node newNode = new Node(node.degree);
     // Copia a metade das chaves para o novo nó
-    int half = no.nKeys / 2;
+    int half = node.nKeys / 2;
 
-    // cria newNode no
-    for (int j = half; j < no.degree - 1; j++) {
-      newNode.keys[j - half] = no.keys[j];
+    // cria novo no
+    for (int j = half; j < node.degree - 1; j++) {
+      newNode.keys[j - half] = node.keys[j];
       newNode.nKeys++; // aumenta qnt de elementos da pagina nova
-      no.nKeys--; // diminui qnt de elementos da pagina principal
+      node.nKeys--; // diminui qnt de elementos da pagina principal
     }
     // Insere a nova chave no nó correto
-    if (id < no.keys[half].id) {
-      no = insertKey(no, id, pointer);
+    if (id < node.keys[half].id) {
+      node = insertKey(node, id, pointer);
     } else {
       newNode = insertKey(newNode, id, pointer);
     }
 
-    // Se o nó não for leaf, copia a metade dos children para o newNode nó
-    if (!no.leaf) {
-      for (int j = half; j < no.degree; j++) {
-        newNode.children[j - half] = no.children[j];
+    // Se o nó não for folha, copia a metade dos filhos para o novo nó
+    if (!node.leaf) {
+      for (int j = half; j < node.degree; j++) {
+        newNode.children[j - half] = node.children[j];
       }
     }
 
-    // Se o nó for leaf, atualiza o ponteiro para o próximo nó
-    if (no.leaf) {
-      no.sibling = newNode;
+    // Se o nó for folha, atualiza o ponteiro para o próximo nó
+    if (node.leaf) {
+      node.sibling = newNode;
     }
-    // Se o nó não tiver parent, cria um newNode nó parent
+    // Se o nó não tiver pai, cria um novo nó pai
     if (parent == null) {
-      parent = new Node(no.degree);
-      parent.children[0] = no;
+      parent = new Node(node.degree);
+      parent.children[0] = node;
       parent.leaf = false;
     }
-    // Insere a chave do half do nó no parent | ia entender mais se fosse a primeira chave do no newNode, mas ok ne
+    // Insere a chave do meio do nó no pai | ia entender mais se fosse a primeira chave do no novo, mas ok ne
     if (parent.nKeys + 1 == parent.degree) {
-      Node tmp = divide(parent.clone(), null, 0, no.keys[half].id, no.keys[half].pointer);
+      Node tmp = divide(parent.clone(), null, 0, node.keys[half].id, node.keys[half].pointer);
 
       for (int j = 0; j < tmp.degree; j++) {
         if (tmp.children[j] != null) {
@@ -133,8 +144,8 @@ public class BPlusTree {
 
       return parent;
     } else {
-      parent = insertKey(parent, no.keys[half].id, no.keys[half].pointer); // ao inves de no.keys[half].id poderia ser newNode.keys[0].id?
-      // Insere o newNode nó no parent
+      parent = insertKey(parent, node.keys[half].id, node.keys[half].pointer); // ao inves de no.keys[half].id poderia ser newNode.keys[0].id?
+      // Insere o novo nó no parent
       for (int j = parent.nKeys - 1; j > i; j--) {
         parent.children[j + 1] = parent.children[j];
       }
