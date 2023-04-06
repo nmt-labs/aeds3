@@ -30,15 +30,15 @@ public class BPlusTree {
           i++; // Posição do filho
         }
         if (parent == null) {
-          parent = divide(no, parent, i, id, pointer);
+          parent = split(no, parent, i, id, pointer);
           this.nElements++;
           return parent;
         } else if (parent.nKeys + 1 == parent.degree) { // esse bloco e identico ao anterior, pq so nao colocou um || ?
-          parent = divide(no, parent, i, id, pointer);
+          parent = split(no, parent, i, id, pointer);
           this.nElements++;
           return parent;
         } else { // se o pai existe e nao ta cheio
-          divide(no, parent, i, id, pointer);
+          split(no, parent, i, id, pointer);
           this.nElements++;
         }
       } else { // se nao estiver cheio insere normal
@@ -86,7 +86,7 @@ public class BPlusTree {
    * @param pointer
    * @return
    */
-  private Node divide(Node node, Node parent, int i, int id, long pointer) {
+  private Node split(Node node, Node parent, int i, int id, long pointer) {
     // Cria um novo nó
     Node newNode = new Node(node.degree);
     // Copia a metade das chaves para o novo nó
@@ -124,7 +124,7 @@ public class BPlusTree {
     }
     // Insere a chave do meio do nó no pai | ia entender mais se fosse a primeira chave do no novo, mas ok ne
     if (parent.nKeys + 1 == parent.degree) {
-      Node tmp = divide(parent.clone(), null, 0, node.keys[half].id, node.keys[half].pointer);
+      Node tmp = split(parent.clone(), null, 0, node.keys[half].id, node.keys[half].pointer);
 
       for (int j = 0; j < tmp.degree; j++) {
         if (tmp.children[j] != null) {
