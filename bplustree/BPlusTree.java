@@ -1,32 +1,75 @@
 package bplustree;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
+import musica.Musica;
+
 public class BPlusTree {
   private int degree;
   private Node root;
   private int nElements;
 
-  public BPlusTree(int degree) {
+  private String fileName = "db" + File.separator + "musicas.db";
+  private RandomAccessFile file;
+
+  public BPlusTree(int degree) throws FileNotFoundException {
     this.degree = degree;
     this.root = new Node(degree);
     this.nElements = 0;
+
+    this.file = new RandomAccessFile(fileName, "rw");
   }
 
   public void showDegreeElements() {
     System.out.println(this.degree + " - " + this.nElements);
   }
 
-  public void insert(int id, long pointer) {
+  public void insert() throws Exception {
+    Key key = new Key();
+    file.readInt();
+    while (!isAvaliable()) {
+      key = readKey(file);
+      insert(key.getId(), key.getPointer());
+      System.out.println(key.toString());
+    }
+  }
+
+  private Key readKey(RandomAccessFile file) throws Exception {
+    Musica reg = null;
+    char lapide = file.readChar();
+    int sizeReg = file.readInt();
+    byte[] bytearray = new byte[sizeReg];
+    file.read(bytearray);
+    Key key = new Key();
+    if (lapide != '*') {
+      long pointer = file.getFilePointer();
+      reg = new Musica();
+      reg.fromByteArray(bytearray);
+      int id = reg.getId();
+      key = new Key(id, pointer);
+    }
+    return key;
+  }
+
+  private boolean isAvaliable() throws Exception {
+    return file.getFilePointer() == file.length();
+  }
+
+  public void insert(int id, long pointer) throws IOException {
     // passa a raiz e, por isso, parent e null | pointer -> ponteiro da posicao do id no arquivo
     this.root = insert(this.root, null, id, pointer);
   }
 
-  private Node insert(Node no, Node parent, int id, long pointer) {
+  private Node insert(Node no, Node parent, int id, long pointer) throws IOException {
     // Se o nó for folha, insere a chave
     if (no.leaf) {
       // Se o nó estiver cheio, divide o nó
       if (no.nKeys + 1 == no.degree) {
         int i = 0;
-        while (parent != null && i < parent.nKeys && id > parent.keys[i].id) {
+        while (parent != null && i < parent.nKeys && id > parent.keys[i].getId()) {
           i++; // Posição do filho
         }
         if (parent == null) {
@@ -49,7 +92,7 @@ public class BPlusTree {
     } else {
       // Se o nó não for leaf, procura o filho onde a chave deve ser inserida
       int i = 0;
-      while (i < no.nKeys && id > no.keys[i].id) {
+      while (i < no.nKeys && id > no.keys[i].getId()) {
         i++;
       }
       if (no != null && no.nKeys + 1 == no.degree && no.children[i].leaf
@@ -60,19 +103,48 @@ public class BPlusTree {
         no.children[i] = insert(no.children[i], no, id, pointer); // filho continua sendo filho e insere no filho
       }
     }
-    return no; // retorna filho ou pai?
+    return no; 
   }
 
-  private Node insertKey(Node no, int id, long pointer) {
+  private Node insertKey(Node no, int id, long pointer) throws IOException {
     int i = no.nKeys - 1;
-    while (i >= 0 && no.keys[i] != null && id < no.keys[i].id) {
+    while (i >= 0 && no.keys[i] != null && id < no.keys[i].getId()) {
       no.keys[i + 1] = no.keys[i];
       i--;
     }
     no.keys[i + 1] = new Key(id, pointer);
     no.nKeys++;
 
+    // escrever no arquivo
+    File musicaSort = new File("db" + File.separator + "musicaBPlusTree.db");
+    RandomAccessFile sortedFile = new RandomAccessFile(musicaSort, "rw");
+    // verifica se arquivo existe
+    if (musicaSort.exists()) {
+      // exclui se ja existir
+      sortedFile.setLength(0);
+    }
+
+    writeFile(sortedFile, root);
+
     return no;
+  }
+
+  private void writeFile(RandomAccessFile file, Node no) throws IOException{
+    // procura a primera folha
+    if(no != null) {
+      if(no.leaf) {
+        // escreve as chaves
+        for(int i = 0; i < no.nKeys; i++) {
+          file.write(no.keys[i].toByteArray());
+        }
+        // passa pra proxima folha
+        writeFile(file, no.sibling);
+      }
+      else {
+        // procura a folha
+        writeFile(file, no.children[0]);
+      }
+    }
   }
 
   /**
@@ -85,8 +157,9 @@ public class BPlusTree {
    * @param id
    * @param pointer
    * @return
+   * @throws IOException
    */
-  private Node split(Node node, Node parent, int i, int id, long pointer) {
+  private Node split(Node node, Node parent, int i, int id, long pointer) throws IOException {
     // Cria um novo nó
     Node newNode = new Node(node.degree);
     // Copia a metade das chaves para o novo nó
@@ -99,7 +172,7 @@ public class BPlusTree {
       node.nKeys--; // diminui qnt de elementos da pagina principal
     }
     // Insere a nova chave no nó correto
-    if (id < node.keys[half].id) {
+    if (id < node.keys[half].getId()) {
       node = insertKey(node, id, pointer);
     } else {
       newNode = insertKey(newNode, id, pointer);
@@ -124,13 +197,13 @@ public class BPlusTree {
     }
     // Insere a chave do meio do nó no pai | ia entender mais se fosse a primeira chave do no novo, mas ok ne
     if (parent.nKeys + 1 == parent.degree) {
-      Node tmp = split(parent.clone(), null, 0, node.keys[half].id, node.keys[half].pointer);
+      Node tmp = split(parent.clone(), null, 0, node.keys[half].getId(), node.keys[half].getPointer());
 
       for (int j = 0; j < tmp.degree; j++) {
         if (tmp.children[j] != null) {
           for (int k = 0; k < tmp.degree; k++) {
-            if (tmp.children[j].keys[tmp.children[j].nKeys - 1].id >= parent.children[k].keys[0].id &&
-                (j == 0 || tmp.children[j - 1].keys[tmp.children[j - 1].nKeys - 1].id < parent.children[k].keys[0].id)) {
+            if (tmp.children[j].keys[tmp.children[j].nKeys - 1].getId() >= parent.children[k].keys[0].getId() &&
+                (j == 0 || tmp.children[j - 1].keys[tmp.children[j - 1].nKeys - 1].getId() < parent.children[k].keys[0].getId())) {
               tmp.children[j].children[k - (3 * j)] = parent.children[k];
               if (k == tmp.degree - 1) {
                 tmp.children[j].children[(k + 1) - (3 * j)] = newNode;
@@ -144,7 +217,7 @@ public class BPlusTree {
 
       return parent;
     } else {
-      parent = insertKey(parent, node.keys[half].id, node.keys[half].pointer); // ao inves de no.keys[half].id poderia ser newNode.keys[0].id?
+      parent = insertKey(parent, node.keys[half].getId(), node.keys[half].getPointer()); // ao inves de no.keys[half].id poderia ser newNode.keys[0].id?
       // Insere o novo nó no parent
       for (int j = parent.nKeys - 1; j > i; j--) {
         parent.children[j + 1] = parent.children[j];
@@ -163,15 +236,15 @@ public class BPlusTree {
     // Se o nó for leaf, retorna o ponteiro da chave
     if (no.leaf) {
       for (int i = 0; i < no.nKeys; i++) {
-        if (no.keys[i].id == id) {
-          return no.keys[i].pointer;
+        if (no.keys[i].getId() == id) {
+          return no.keys[i].getPointer();
         }
       }
       return -1;
     } else {
       // Se o nó não for leaf, procura o filho onde a chave deve estar
       int i = 0;
-      while (i < no.nKeys && id > no.keys[i].id) {
+      while (i < no.nKeys && id > no.keys[i].getId()) {
         i++;
       }
       return search(no.children[i], id);
@@ -190,8 +263,8 @@ public class BPlusTree {
       // Percorre as keys do nó e dos irmãos
       for (Node n = no; n != null; n = n.sibling) {
         for (int i = 0; i < n.nKeys; i++) {
-          if (n.keys[i].id <= id) {
-            pointers[j] = n.keys[i].pointer;
+          if (n.keys[i].getId() <= id) {
+            pointers[j] = n.keys[i].getPointer();
             j++;
             if (j == tamanho) {
               return pointers;
@@ -203,7 +276,7 @@ public class BPlusTree {
     } else {
       // Se o nó não for leaf, procura o filho onde a chave deve estar
       int i = 0;
-      while (i < no.nKeys && id > no.keys[i].id) {
+      while (i < no.nKeys && id > no.keys[i].getId()) {
         i++;
       }
       return search(no.children[i], id, tamanho);
