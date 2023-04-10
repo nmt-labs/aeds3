@@ -20,7 +20,7 @@ public class Node {
   public void print() {
     System.out.print("[");
     for (int i = 0; i < nKeys; i++) {
-      System.out.print(keys[i] == null ? "null" : keys[i].id);
+      System.out.print(keys[i] == null ? "null" : keys[i].getId());
       if (i < nKeys - 1) {
         System.out.print(", ");
       }
