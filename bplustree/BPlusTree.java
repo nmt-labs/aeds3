@@ -33,7 +33,6 @@ public class BPlusTree {
     while (!isAvaliable()) {
       key = readKey(file);
       insert(key.getId(), key.getPointer());
-      System.out.println(key.toString());
     }
   }
 
