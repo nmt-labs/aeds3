@@ -7,6 +7,7 @@ import java.util.Scanner;
 import externalsort.CommonIntercalation;
 import externalsort.Selection;
 import externalsort.VariableIntercalation;
+import invertedList.InvertedList;
 import musica.Crud;
 import musica.Musica;
 
@@ -77,14 +78,16 @@ public class Menu {
         break;
       case 4:
       // delete
-        System.out.println("Digite o ID da música:");
-        id = scan.nextInt();
-        musica = crud.delete(id);
-        if (musica != null) {
-            System.out.println("Música de id " + musica.getId() + " deletada com sucesso!");
-        } else {
-            System.err.println("Música não encontrada");
-        }
+        // System.out.println("Digite o ID da música:");
+        // id = scan.nextInt();
+        // musica = crud.delete(id);
+        // if (musica != null) {
+        //     System.out.println("Música de id " + musica.getId() + " deletada com sucesso!");
+        // } else {
+        //     System.err.println("Música não encontrada");
+        // }
+          InvertedList teste = new InvertedList();
+          teste.createInvertedList();
         break;
         case 5:
         int caminhos, bloco, heap;
