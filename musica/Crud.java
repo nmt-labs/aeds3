@@ -8,6 +8,8 @@ import extendiblehash.ExtendibleHash;
 public class Crud {
   private String fileName = "db" + File.separator+ "musicas.db";
   private RandomAccessFile file;
+  private BPlusTree bplus;
+   private ExtendibleHash hash;
 
   public Crud() {
     try {
@@ -41,10 +43,10 @@ public class Crud {
     file.close();
 
     // inserir arquivo de indice
-    BPlusTree bplus = new BPlusTree(8);
+    bplus = new BPlusTree(8);
     bplus.insert();
 
-    ExtendibleHash hash = new ExtendibleHash(8);
+    hash = new ExtendibleHash(8);
     hash.add(musica.getId(), pos);
 
     System.out.println("Música adicionada com sucesso! Seu id é " + musica.getId());
@@ -116,6 +118,15 @@ public class Crud {
       }
     }
     file.close();
+
+    // inserir arquivo de indice
+    bplus = new BPlusTree(8);
+    bplus.insert();
+
+    hash = new ExtendibleHash(8);
+    hash.add();
+
+
     return false;
   }
 
