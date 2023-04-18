@@ -25,6 +25,15 @@ public class Crud {
     }catch(Exception e){System.out.println(e.getMessage());}
   }
 
+  public void indice() throws Exception{
+    // inserir arquivo de indice
+    bplus = new BPlusTree(8);
+    bplus.insert();
+
+    hash = new ExtendibleHash(8);
+    hash.add();
+  }
+
   // Método de inserção no arquivo
   public void create(Musica musica) throws Exception {
     file = new RandomAccessFile(fileName, "rw");
@@ -43,11 +52,7 @@ public class Crud {
     file.close();
 
     // inserir arquivo de indice
-    bplus = new BPlusTree(8);
-    bplus.insert();
-
-    hash = new ExtendibleHash(8);
-    hash.add(musica.getId(), pos);
+    indice();
 
     System.out.println("Música adicionada com sucesso! Seu id é " + musica.getId());
   }
@@ -103,6 +108,9 @@ public class Crud {
               file.write(newBa);
 
               file.close();
+
+              // inserir arquivo de indice
+              indice();
               return true;
           } else { // senao, escreve no fim do arquivo e deleta o anterior
               file.seek(file.length());
@@ -112,21 +120,15 @@ public class Crud {
               delete(musicFile.getId());
 
               file.close();
+
+              // inserir arquivo de indice
+              indice();
               return true;
           }
         }
       }
     }
     file.close();
-
-    // inserir arquivo de indice
-    bplus = new BPlusTree(8);
-    bplus.insert();
-
-    hash = new ExtendibleHash(8);
-    hash.add();
-
-
     return false;
   }
 
