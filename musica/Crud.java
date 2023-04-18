@@ -25,7 +25,7 @@ public class Crud {
     }catch(Exception e){System.out.println(e.getMessage());}
   }
 
-  public void indice() throws Exception{
+  public void indice(int id, long pos) throws Exception{
     // inserir arquivo de indice
     bplus = new BPlusTree(8);
     bplus.insert();
@@ -52,7 +52,7 @@ public class Crud {
     file.close();
 
     // inserir arquivo de indice
-    indice();
+    indice(musica.getId(), pos);
 
     System.out.println("Música adicionada com sucesso! Seu id é " + musica.getId());
   }
@@ -105,15 +105,17 @@ public class Crud {
           newBa = musica.toByteArray();
           if (newBa.length <= size) { // se for menor que o registro anterior, sobrescreve
               file.seek(position + 6);
+              long pos = file.getFilePointer();
               file.write(newBa);
 
               file.close();
 
               // inserir arquivo de indice
-              indice();
+              indice(musica.getId(), pos);
               return true;
           } else { // senao, escreve no fim do arquivo e deleta o anterior
               file.seek(file.length());
+              long pos = file.getFilePointer();
               file.writeChar(' ');
               file.writeInt(newBa.length);
               file.write(newBa);
@@ -122,7 +124,7 @@ public class Crud {
               file.close();
 
               // inserir arquivo de indice
-              indice();
+              indice(musica.getId(), pos);
               return true;
           }
         }
