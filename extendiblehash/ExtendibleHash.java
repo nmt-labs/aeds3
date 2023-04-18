@@ -1,8 +1,12 @@
 package extendiblehash;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+
+import bplustree.Key;
+import musica.Musica;
 
 public class ExtendibleHash {
 
@@ -15,6 +19,9 @@ public class ExtendibleHash {
   private final int INT_SIZE = (Integer.BYTES + Long.BYTES); // id + pos
   private final int INT_SIZE_2 = (2 * Integer.BYTES);
   private final int CONST_MATH = 4;
+
+  private String fileName = "db" + File.separator + "musicas.db";
+  private RandomAccessFile file;
 
   public RandomAccessFile getPointersEnd() {return pointersEnd;}
   public void setPointersEnd(RandomAccessFile pointersEnd) {this.pointersEnd = pointersEnd;}
@@ -30,23 +37,25 @@ public class ExtendibleHash {
   public int getCONST_MATH() {return CONST_MATH;}
 
   
-  public ExtendibleHash(RandomAccessFile pointersEnd, RandomAccessFile bucketsList, int buckSize, int p, int BuckByteSize) {
+  public ExtendibleHash(RandomAccessFile pointersEnd, RandomAccessFile bucketsList, int buckSize, int p, int BuckByteSize) throws FileNotFoundException {
     this.pointersEnd = pointersEnd;
     this.bucketsList = bucketsList;
     this.buckSize = buckSize;
     this.p = p;
     this.BuckByteSize = BuckByteSize;
+    this.file = new RandomAccessFile(fileName, "rw");
   }
 
   public ExtendibleHash(int buckSize) throws IOException, Exception {
     System.out.println("Access HASH");
+    this.file = new RandomAccessFile(fileName, "rw");
     this.buckSize = buckSize; // 8
     this.p = 2;
     pointersEnd = new RandomAccessFile(hasher, "rw");
     bucketsList = new RandomAccessFile(buckets, "rw");
     // definindo bytes do bucket
     BuckByteSize = buckSize * INT_SIZE + INT_SIZE_2;
-    if (!avaliable()) {
+    if (!isAvaliable()) {
       // cria novo hash
       System.out.println("Criando novo HASH");
       startHash();
@@ -100,10 +109,36 @@ public class ExtendibleHash {
    * @return
    * @throws IOException
    */
-  public boolean avaliable() throws IOException {
+  public boolean isAvaliable() throws IOException {
     return (pointersEnd.length() > 0 && bucketsList.length() > 0);
   }
 
+  public void insert() throws Exception {
+    Key key = new Key();
+    file.readInt();
+    while (!isAvaliable()) {
+      key = readKey(file);
+      add(key.getId(), key.getPointer());
+    }
+  }
+
+  private Key readKey(RandomAccessFile file) throws Exception {
+    Musica reg = null;
+    char lapide = file.readChar();
+    int sizeReg = file.readInt();
+    byte[] bytearray = new byte[sizeReg];
+    file.read(bytearray);
+    Key key = new Key();
+    if (lapide != '*') {
+      long pointer = file.getFilePointer();
+      reg = new Musica();
+      reg.fromByteArray(bytearray);
+      int id = reg.getId();
+      key = new Key(id, pointer);
+    }
+    return key;
+  }
+  
   /**
    * Adição no bucket disponivel
    * 
