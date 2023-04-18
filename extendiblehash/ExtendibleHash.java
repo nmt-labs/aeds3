@@ -113,7 +113,14 @@ public class ExtendibleHash {
     return (pointersEnd.length() > 0 && bucketsList.length() > 0);
   }
 
-  public void insert() throws Exception {
+  /**
+   * O método que adiciona um novo elemento no hash já criado
+   * Função para carga inicial
+   * 
+   * @param index   index do elemento
+   * @param pointer ptr para o elemento
+   */
+  public void add() throws Exception {
     Key key = new Key();
     file.readInt();
     while (!isAvaliable()) {
@@ -122,6 +129,13 @@ public class ExtendibleHash {
     }
   }
 
+  /**
+   * Leitura de chave
+   * 
+   * @param file
+   * @return
+   * @throws Exception
+   */
   private Key readKey(RandomAccessFile file) throws Exception {
     Musica reg = null;
     char lapide = file.readChar();
