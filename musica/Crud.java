@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 
 import bplustree.BPlusTree;
+import extendiblehash.ExtendibleHash;
 
 public class Crud {
   private String fileName = "db" + File.separator+ "musicas.db";
@@ -30,6 +31,7 @@ public class Crud {
     file.seek(0); // move ponteiro para o inicio do arquivo
     file.writeInt(musica.getId()); // escreve id da ultima musica no inicio do arquivo
     file.seek(file.length());// mover para o fim do arquivo
+    long pos = file.getFilePointer();
 
     // escrever registro
     file.writeChar(' '); // escreve a lápide
@@ -41,6 +43,9 @@ public class Crud {
     // inserir arquivo de indice
     BPlusTree bplus = new BPlusTree(8);
     bplus.insert();
+
+    ExtendibleHash hash = new ExtendibleHash(8);
+    hash.add(musica.getId(), pos);
 
     System.out.println("Música adicionada com sucesso! Seu id é " + musica.getId());
   }
