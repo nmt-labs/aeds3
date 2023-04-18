@@ -128,13 +128,6 @@ public class ExtendibleHash {
       }
   }
 
-  @Override
-  public String toString() {
-      return "HashConta [pointersEnd=" + pointersEnd + ", bucketsList=" + bucketsList + ", buckSize=" + buckSize
-              + ", p=" + p + ", BuckByteSize=" + BuckByteSize + ", INT_SIZE=" + INT_SIZE + ", INT_SIZE_2=" + INT_SIZE_2
-              + ", CONST_MATH=" + CONST_MATH + "]";
-  }
-
   /**
    * O método que adiciona um novo elemento no hash já criado
    * Função responsavel por reparticionar um bucket e realocar caso o mesmo esteja
@@ -154,6 +147,7 @@ public class ExtendibleHash {
       int pLoc = bucketsList.readInt(); // valor de p do bucket
       int qtd = bucketsList.readInt(); // le quantidade de itens no bucket
       if (qtd < buckSize) {
+        // se tiver espaço no bucket
         addBucket(qtd, index, pointer);
       } else {
         // bucket cheio com P igual
@@ -398,5 +392,12 @@ public class ExtendibleHash {
       if (CONST_MATH != other.CONST_MATH)
           return false;
       return true;
+  }
+
+  @Override
+  public String toString() {
+      return "HashConta [pointersEnd=" + pointersEnd + ", bucketsList=" + bucketsList + ", buckSize=" + buckSize
+              + ", p=" + p + ", BuckByteSize=" + BuckByteSize + ", INT_SIZE=" + INT_SIZE + ", INT_SIZE_2=" + INT_SIZE_2
+              + ", CONST_MATH=" + CONST_MATH + "]";
   }
 }
