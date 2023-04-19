@@ -14,7 +14,7 @@ class UseCSVReader {
   private String line;
 
   public UseCSVReader(){
-    file = "db" + File.separator + "spotifydb.csv";
+    file = "db" + File.separator + "spotifyTeste.csv";
     line = "";
   }
 

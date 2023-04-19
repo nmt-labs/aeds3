@@ -31,7 +31,7 @@ public class Crud {
     bplus.insert();
 
     hash = new ExtendibleHash(8);
-    hash.add();
+    hash.add(id, pos);
   }
 
   // Método de inserção no arquivo
