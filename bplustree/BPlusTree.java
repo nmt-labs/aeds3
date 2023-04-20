@@ -229,16 +229,16 @@ public class BPlusTree {
     treeFile.seek(0);
     while (treeFile.getFilePointer() < treeFile.length()) {
       idFile = treeFile.readInt();
-        if (idFile == id) {
-          pos = treeFile.readLong();
-          treeFile.close();
-          return pos;
-        }
-        treeFile.readLong();
+      if (idFile == id) {
+        pos = treeFile.readLong();
+        treeFile.close();
+        return pos;
       }
+      treeFile.readLong();
+    }
 
-      treeFile.close();
-      return -1;
+    treeFile.close();
+    return -1;
   }
 
   public void print() {
