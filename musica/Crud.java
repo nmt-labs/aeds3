@@ -1,6 +1,8 @@
 package musica;
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.text.ParseException;
 
 import bplustree.BPlusTree;
 import extendiblehash.ExtendibleHash;
@@ -9,9 +11,12 @@ public class Crud {
   private String fileName = "db" + File.separator+ "musicas.db";
   private RandomAccessFile file;
   private BPlusTree bplus;
-   private ExtendibleHash hash;
+  private ExtendibleHash hash;
 
-  public Crud() {
+  public Crud() throws IOException, Exception {
+    bplus = new BPlusTree(8);
+    hash = new ExtendibleHash(8);
+
     try {
       boolean checkFile = (new File(fileName)).exists();
       if (!checkFile){
@@ -27,10 +32,7 @@ public class Crud {
 
   public void indice(int id, long pos) throws Exception{
     // inserir arquivo de indice
-    bplus = new BPlusTree(8);
     bplus.insert();
-
-    hash = new ExtendibleHash(8);
     hash.add(id, pos);
   }
 
@@ -80,6 +82,48 @@ public class Crud {
 
     file.close(); 
     return null;
+  }
+
+  public Musica readBPlus(int id) throws IOException, ParseException {
+    file = new RandomAccessFile(fileName, "rw");
+    byte[] ba;
+    int size;
+    Musica musica = new Musica();
+
+    long pos = bplus.search(id);
+    if (pos > 0) file.seek(pos);
+    else {
+      file.close();
+      return null;
+    }
+    file.readChar(); // lapide
+    size = file.readInt();
+    ba = new byte[size];
+    file.read(ba);
+    musica.fromByteArray(ba);
+    file.close(); 
+    return musica;
+  }
+
+  public Musica readHash(int id) throws IOException, ParseException {
+    file = new RandomAccessFile(fileName, "rw");
+    byte[] ba;
+    int size;
+    Musica musica = new Musica();
+
+    long pos = hash.search(id);
+    if (pos > 0) file.seek(pos);
+    else {
+      file.close();
+      return null;
+    }
+    file.readChar(); // lapide
+    size = file.readInt();
+    ba = new byte[size];
+    file.read(ba);
+    musica.fromByteArray(ba);
+    file.close(); 
+    return musica;
   }
 
   // Método de alteracao no arquivo
