@@ -23,10 +23,6 @@ public class BPlusTree {
     this.file = new RandomAccessFile(fileName, "rw");
   }
 
-  public void showDegreeElements() {
-    System.out.println(this.degree + " - " + this.nElements);
-  }
-
   public void insert() throws Exception {
     Key key = new Key();
     file.readInt();
@@ -147,9 +143,6 @@ public class BPlusTree {
   }
 
   /**
-   * ele escolheu subir com o item do meio do no a esquerda (menor) ao inves do primeiro a direita (maior). na divisao, a maior parte da
-   * divisao fica no no novo
-   * -> eu subiria com o priemiro da direita e deixaria a meior parte da divisao no no antigo
    * @param node
    * @param parent
    * @param i
@@ -248,57 +241,6 @@ public class BPlusTree {
       return -1;
   }
 
-  // private long search(Node no, int id) {
-  //   // Se o nó for leaf, retorna o ponteiro da chave
-  //   if (no.leaf) {
-  //     for (int i = 0; i < no.nKeys; i++) {
-  //       if (no.keys[i].getId() == id) {
-  //         return no.keys[i].getPointer();
-  //       }
-  //     }
-  //     return -1;
-  //   } else {
-  //     // Se o nó não for leaf, procura o filho onde a chave deve estar
-  //     int i = 0;
-  //     while (i < no.nKeys && id > no.keys[i].getId()) {
-  //       i++;
-  //     }
-  //     return search(no.children[i], id);
-  //   }
-  // }
-
-  // public long[] search(int id, int tamanho) {
-  //   return search(this.root, id, tamanho);
-  // }
-
-  // private long[] search(Node no, int id, int tamanho) {
-  //   // Se o nó for leaf, retorna os ponteiros das keys
-  //   if (no.leaf) {
-  //     long[] pointers = new long[tamanho];
-  //     int j = 0;
-  //     // Percorre as keys do nó e dos irmãos
-  //     for (Node n = no; n != null; n = n.sibling) {
-  //       for (int i = 0; i < n.nKeys; i++) {
-  //         if (n.keys[i].getId() <= id) {
-  //           pointers[j] = n.keys[i].getPointer();
-  //           j++;
-  //           if (j == tamanho) {
-  //             return pointers;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     return pointers;
-  //   } else {
-  //     // Se o nó não for leaf, procura o filho onde a chave deve estar
-  //     int i = 0;
-  //     while (i < no.nKeys && id > no.keys[i].getId()) {
-  //       i++;
-  //     }
-  //     return search(no.children[i], id, tamanho);
-  //   }
-  // }
-
   public void print() {
     System.out.println("Imprimindo arvore:");
     print(this.root, 0);
@@ -314,5 +256,9 @@ public class BPlusTree {
         print(no.children[i], level + 1);
       }
     }
+  }
+
+  public void showDegreeElements() {
+    System.out.println(this.degree + " - " + this.nElements);
   }
 }
