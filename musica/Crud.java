@@ -109,24 +109,21 @@ public class Crud {
     file = new RandomAccessFile(fileName, "rw");
     byte[] ba;
     int size;
-    char lapide;
     Musica musica = new Musica();
+
     long pos = hash.search(id);
     if (pos > 0) file.seek(pos);
-    else return null;
-
-    lapide = file.readChar();
-      size = file.readInt();
-      ba = new byte[size];
-      file.read(ba);
-      if (lapide != '*') {
-        musica.fromByteArray(ba);
-        if (musica.getId() == id)
-          return musica;
-      }
-
+    else {
+      file.close();
+      return null;
+    }
+    file.readChar(); // lapide
+    size = file.readInt();
+    ba = new byte[size];
+    file.read(ba);
+    musica.fromByteArray(ba);
     file.close(); 
-    return null;
+    return musica;
   }
 
   // Método de alteracao no arquivo
