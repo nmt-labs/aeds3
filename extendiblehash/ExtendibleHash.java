@@ -47,7 +47,7 @@ public class ExtendibleHash {
   }
 
   public ExtendibleHash(int buckSize) throws IOException, Exception {
-    System.out.println("Access HASH");
+    //System.out.println("Access HASH");
     this.file = new RandomAccessFile(fileName, "rw");
     this.buckSize = buckSize; // 8
     this.p = 2;
@@ -57,13 +57,13 @@ public class ExtendibleHash {
     BuckByteSize = buckSize * INT_SIZE + INT_SIZE_2;
     if (!isAvaliable()) {
       // cria novo hash
-      System.out.println("Criando novo HASH");
+      //System.out.println("Criando novo HASH");
       startHash();
     } else {
       // le qual o valor atual de p
       pointersEnd.seek(0);
       this.p = pointersEnd.readInt();
-      System.out.println("Sistema de HASH pronto para operar");
+      //System.out.println("Sistema de HASH pronto para operar");
     }
   }
 
@@ -287,7 +287,7 @@ public class ExtendibleHash {
    * @param index   indice do objeto de conta
    * @param novoEnd novo endereço dentro do arquivo de contas
    */
-  public void atualizar(int index, long novoEnd) {
+  public void update(int index, long novoEnd) {
       try {
           int posHash = (index % (int) Math.pow(2, p)) * 8 + CONST_MATH;
           pointersEnd.seek(posHash);
@@ -329,7 +329,7 @@ public class ExtendibleHash {
    * @param index da conta alvo para deletar
    * @return referente ao endereço de remoção
    */
-  public long remover(int index) {
+  public long remove(int index) {
       long pointer = -1;
       try {
           int posHash = (index % (int) Math.pow(2, p)) * 8 + CONST_MATH;
@@ -370,7 +370,7 @@ public class ExtendibleHash {
    * @param index para localizar baseado em objeto de Conta
    * @return Endereço relativo ao arquivo de dados de contas
    */
-  public long localizar(int index) {
+  public long search(int index) {
       long pointer = -1;
       try {
           int posHash = (index % (int) Math.pow(2, p)) * 8 + CONST_MATH;

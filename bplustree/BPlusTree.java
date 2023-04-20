@@ -116,14 +116,14 @@ public class BPlusTree {
 
     // escrever no arquivo
     File musicaSort = new File("db" + File.separator + "musicaBPlusTree.db");
-    RandomAccessFile sortedFile = new RandomAccessFile(musicaSort, "rw");
+    RandomAccessFile treeFile = new RandomAccessFile(musicaSort, "rw");
     // verifica se arquivo existe
     if (musicaSort.exists()) {
       // exclui se ja existir
-      sortedFile.setLength(0);
+      treeFile.setLength(0);
     }
 
-    writeFile(sortedFile, root);
+    writeFile(treeFile, root);
 
     return no;
   }
@@ -227,60 +227,77 @@ public class BPlusTree {
     }
   }
 
-  public long search(int id) {
-    return search(this.root, id);
-  }
+  public long search(int id) throws IOException {
+    File musicaSort = new File("db" + File.separator + "musicaBPlusTree.db");
+    RandomAccessFile treeFile = new RandomAccessFile(musicaSort, "rw");
+    int idFile;
+    long pos;
 
-  private long search(Node no, int id) {
-    // Se o nó for leaf, retorna o ponteiro da chave
-    if (no.leaf) {
-      for (int i = 0; i < no.nKeys; i++) {
-        if (no.keys[i].getId() == id) {
-          return no.keys[i].getPointer();
+    treeFile.seek(0);
+    while (treeFile.getFilePointer() < treeFile.length()) {
+      idFile = treeFile.readInt();
+        if (idFile == id) {
+          pos = treeFile.readLong();
+          treeFile.close();
+          return pos;
         }
+        treeFile.readLong();
       }
+
+      treeFile.close();
       return -1;
-    } else {
-      // Se o nó não for leaf, procura o filho onde a chave deve estar
-      int i = 0;
-      while (i < no.nKeys && id > no.keys[i].getId()) {
-        i++;
-      }
-      return search(no.children[i], id);
-    }
   }
 
-  public long[] search(int id, int tamanho) {
-    return search(this.root, id, tamanho);
-  }
+  // private long search(Node no, int id) {
+  //   // Se o nó for leaf, retorna o ponteiro da chave
+  //   if (no.leaf) {
+  //     for (int i = 0; i < no.nKeys; i++) {
+  //       if (no.keys[i].getId() == id) {
+  //         return no.keys[i].getPointer();
+  //       }
+  //     }
+  //     return -1;
+  //   } else {
+  //     // Se o nó não for leaf, procura o filho onde a chave deve estar
+  //     int i = 0;
+  //     while (i < no.nKeys && id > no.keys[i].getId()) {
+  //       i++;
+  //     }
+  //     return search(no.children[i], id);
+  //   }
+  // }
 
-  private long[] search(Node no, int id, int tamanho) {
-    // Se o nó for leaf, retorna os ponteiros das keys
-    if (no.leaf) {
-      long[] pointers = new long[tamanho];
-      int j = 0;
-      // Percorre as keys do nó e dos irmãos
-      for (Node n = no; n != null; n = n.sibling) {
-        for (int i = 0; i < n.nKeys; i++) {
-          if (n.keys[i].getId() <= id) {
-            pointers[j] = n.keys[i].getPointer();
-            j++;
-            if (j == tamanho) {
-              return pointers;
-            }
-          }
-        }
-      }
-      return pointers;
-    } else {
-      // Se o nó não for leaf, procura o filho onde a chave deve estar
-      int i = 0;
-      while (i < no.nKeys && id > no.keys[i].getId()) {
-        i++;
-      }
-      return search(no.children[i], id, tamanho);
-    }
-  }
+  // public long[] search(int id, int tamanho) {
+  //   return search(this.root, id, tamanho);
+  // }
+
+  // private long[] search(Node no, int id, int tamanho) {
+  //   // Se o nó for leaf, retorna os ponteiros das keys
+  //   if (no.leaf) {
+  //     long[] pointers = new long[tamanho];
+  //     int j = 0;
+  //     // Percorre as keys do nó e dos irmãos
+  //     for (Node n = no; n != null; n = n.sibling) {
+  //       for (int i = 0; i < n.nKeys; i++) {
+  //         if (n.keys[i].getId() <= id) {
+  //           pointers[j] = n.keys[i].getPointer();
+  //           j++;
+  //           if (j == tamanho) {
+  //             return pointers;
+  //           }
+  //         }
+  //       }
+  //     }
+  //     return pointers;
+  //   } else {
+  //     // Se o nó não for leaf, procura o filho onde a chave deve estar
+  //     int i = 0;
+  //     while (i < no.nKeys && id > no.keys[i].getId()) {
+  //       i++;
+  //     }
+  //     return search(no.children[i], id, tamanho);
+  //   }
+  // }
 
   public void print() {
     System.out.println("Imprimindo arvore:");
