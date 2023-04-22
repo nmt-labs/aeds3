@@ -34,7 +34,7 @@ public class Menu {
       System.out.println("3- Alterar uma música");
       System.out.println("4- Excluir uma música");
       System.out.println("5- Ordenar");
-      System.out.println("6- Buscar na lista invertida");
+      System.out.println("8- Buscar na lista invertida");
       System.out.println("0- Sair");
       System.out.println("Digite a opção: ");
       op = scan.nextInt();
@@ -145,7 +145,7 @@ public class Menu {
         }
 
         break;
-      case 6:
+      case 8:
         System.out.println("Digite o termo que deseja procurar na lista invertida, seja por nome ou por artista: ");
         scan.nextLine();
         word = scan.nextLine();

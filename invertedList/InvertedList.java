@@ -62,7 +62,7 @@ public class InvertedList {
                     if (pos != openFile.length()) {
                         openFile.seek(pos);
                         openFile.writeByte(id);
-                        // Caso contrário, move o ponteiro para a posição atual e escreve a palavra, o id e valores para preencher o espaço restante no registro
+                        // Caso contrário, move o ponteiro para a posição atual e escreve a palavra, o id e valores para indicar final do registro
                     } else {
                         openFile.seek(pos);
                         openFile.writeUTF(words[i]);
@@ -73,7 +73,7 @@ public class InvertedList {
                         openFile.writeByte(-1);
                         openFile.writeLong(-1);
                     }
-                    // Se a palavra não existe no arquivo, move o ponteiro para o final do arquivo e escreve a palavra, o id e preencher espaços
+                    // Se a palavra não existe no arquivo, move o ponteiro para o final do arquivo e escreve a palavra, o id e valores para indicar final do registro
                 } else {
                     openFile.seek(openFile.length());
                     openFile.writeUTF(words[i]);
