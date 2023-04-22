@@ -34,6 +34,8 @@ public class Menu {
       System.out.println("3- Alterar uma música");
       System.out.println("4- Excluir uma música");
       System.out.println("5- Ordenar");
+      System.out.println("6- Procurar com B Plus Tree");
+      System.out.println("7- Procurar com Extendible Hash");
       System.out.println("8- Buscar na lista invertida");
       System.out.println("0- Sair");
       System.out.println("Digite a opção: ");
@@ -144,6 +146,27 @@ public class Menu {
             break;
         }
 
+        break;
+      case 6:
+        System.out.println("Digite o ID da música:");
+        id = scan.nextInt();
+        musica = crud.readBPlus(id);
+        if (musica != null) {
+          System.out.println(musica.toString());
+        } else {
+          System.out.println("Nenhuma música localizada");
+        }
+        break;
+
+      case 7:
+        System.out.println("Digite o ID da música:");
+        id = scan.nextInt();
+        musica = crud.readHash(id);
+        if (musica != null) {
+          System.out.println(musica.toString());
+        } else {
+          System.out.println("Nenhuma música localizada");
+        }
         break;
       case 8:
         System.out.println("Digite o termo que deseja procurar na lista invertida, seja por nome ou por artista: ");
@@ -288,7 +311,8 @@ public class Menu {
           name = scan.nextLine();
 
           musica.setName(name);
-          il.updateInvertedList(name, idByte, "invertedList" + File.separator + "db" + File.separator + "invertedListNames.db");
+          il.updateInvertedList(name, idByte,
+              "invertedList" + File.separator + "db" + File.separator + "invertedListNames.db");
 
           break;
         case 2:
@@ -300,7 +324,8 @@ public class Menu {
           }
 
           musica.setArtists(artists);
-          il.updateInvertedList(separateArtists(artists), idByte, "invertedList" + File.separator + "db" + File.separator + "invertedListArtists.db");
+          il.updateInvertedList(separateArtists(artists), idByte,
+              "invertedList" + File.separator + "db" + File.separator + "invertedListArtists.db");
 
           break;
         case 3:
