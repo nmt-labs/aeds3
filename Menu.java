@@ -167,7 +167,7 @@ public class Menu {
         } else {
           System.out.println("Nenhuma música localizada");
         }
-        break;
+        break; 
       case 8:
         System.out.println("Digite o termo que deseja procurar na lista invertida, seja por nome ou por artista: ");
         scan.nextLine();
