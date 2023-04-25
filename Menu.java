@@ -7,8 +7,8 @@ import java.util.Scanner;
 import externalsort.CommonIntercalation;
 import externalsort.Selection;
 import externalsort.VariableIntercalation;
+import invertedlist.InvertedList;
 import musica.Crud;
-import invertedList.InvertedList;
 import musica.Musica;
 
 import java.util.*;

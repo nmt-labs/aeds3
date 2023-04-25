@@ -1,4 +1,4 @@
-package invertedList;
+package invertedlist;
 
 import java.io.RandomAccessFile;
 import java.text.ParseException;
@@ -29,14 +29,15 @@ public class InvertedList {
         }
     }
 
-/**
- * This method creates the inverted list
- * @param word
- * @param id
- * @param file
- * @throws IOException
- * @throws ParseException
- */
+    /**
+     * This method creates the inverted list
+     * 
+     * @param word
+     * @param id
+     * @param file
+     * @throws IOException
+     * @throws ParseException
+     */
     public void createInvertedList(String word, int id, String file) throws IOException, ParseException {
         // tira palavras inuteis
         word = treatWords(word);
@@ -49,10 +50,9 @@ public class InvertedList {
         }
 
         // separar palavras
-        String words[] = new String[count]; 
+        String words[] = new String[count];
         words = word.split(" ");
-        try {
-            RandomAccessFile openFile = new RandomAccessFile(file, "rw");
+        try (RandomAccessFile openFile = new RandomAccessFile(file, "rw")) {
             for (int i = 0; i < words.length; i++) {
                 // verifica se palavra já existe na lista
                 if (contains(words[i], file) == true) {
@@ -62,7 +62,8 @@ public class InvertedList {
                     if (pos != openFile.length()) {
                         openFile.seek(pos);
                         openFile.writeByte(id);
-                        // Caso contrário, move o ponteiro para a posição atual e escreve a palavra, o id e valores para indicar final do registro
+                        // Caso contrário, move o ponteiro para a posição atual e escreve a palavra, o
+                        // id e valores para indicar final do registro
                     } else {
                         openFile.seek(pos);
                         openFile.writeUTF(words[i]);
@@ -73,7 +74,8 @@ public class InvertedList {
                         openFile.writeByte(-1);
                         openFile.writeLong(-1);
                     }
-                    // Se a palavra não existe no arquivo, move o ponteiro para o final do arquivo e escreve a palavra, o id e valores para indicar final do registro
+                    // Se a palavra não existe no arquivo, move o ponteiro para o final do arquivo e
+                    // escreve a palavra, o id e valores para indicar final do registro
                 } else {
                     openFile.seek(openFile.length());
                     openFile.writeUTF(words[i]);
@@ -90,12 +92,14 @@ public class InvertedList {
         }
     }
 
-/**
- * This method reads a word and checks if it is present in the inverted list. If the word is present, it returns the ids where the word appears
- * @param word -> searched word
- * @param file -> file to read
- * @return
- */
+    /**
+     * This method reads a word and checks if it is present in the inverted list. If
+     * the word is present, it returns the ids where the word appears
+     * 
+     * @param word -> searched word
+     * @param file -> file to read
+     * @return
+     */
     public ArrayList<Byte> readInvertedList(String word, String file) {
         ArrayList<Byte> ids = new ArrayList<>();
         int count = 0;
@@ -107,8 +111,7 @@ public class InvertedList {
         String words[] = new String[count];
         words = word.split(" ");
 
-        try {
-            RandomAccessFile openFile = new RandomAccessFile(file, "rw");
+        try (RandomAccessFile openFile = new RandomAccessFile(file, "rw")) {
             String wordsList;
             byte id;
             long pos;
@@ -178,73 +181,77 @@ public class InvertedList {
         }
         return ids;
     }
-/**
- * This method removes all words from the list corresponding to the ID of the deleted song
- * @param id
- * @param file
- */
-public void deleteInvertedList(byte id, String file) {
-    try {
-        RandomAccessFile openFile = new RandomAccessFile(file, "rw");
 
-        long pos;
+    /**
+     * This method removes all words from the list corresponding to the ID of the
+     * deleted song
+     * 
+     * @param id
+     * @param file
+     */
+    public void deleteInvertedList(byte id, String file) {
+        try (RandomAccessFile openFile = new RandomAccessFile(file, "rw")) {
 
-        while(openFile.getFilePointer() < openFile.length()) {
-            openFile.readUTF(); // ler nome/artista
-            
-            // verifica se o id procurado está na lista, se tiver, grava o valor -1 no arquivo na posição atual do ponteiro, o que remove o ID do arquivo
-            pos = openFile.getFilePointer();
-            if(openFile.readByte() == id) {
-                openFile.seek(pos);
-                openFile.writeByte(-1);
+            long pos;
+
+            while (openFile.getFilePointer() < openFile.length()) {
+                openFile.readUTF(); // ler nome/artista
+
+                // verifica se o id procurado está na lista, se tiver, grava o valor -1 no
+                // arquivo na posição atual do ponteiro, o que remove o ID do arquivo
+                pos = openFile.getFilePointer();
+                if (openFile.readByte() == id) {
+                    openFile.seek(pos);
+                    openFile.writeByte(-1);
+                }
+
+                pos = openFile.getFilePointer();
+                if (openFile.readByte() == id) {
+                    openFile.seek(pos);
+                    openFile.writeByte(-1);
+                }
+
+                pos = openFile.getFilePointer();
+                if (openFile.readByte() == id) {
+                    openFile.seek(pos);
+                    openFile.writeByte(-1);
+                }
+
+                pos = openFile.getFilePointer();
+                if (openFile.readByte() == id) {
+                    openFile.seek(pos);
+                    openFile.writeByte(-1);
+                }
+
+                pos = openFile.getFilePointer();
+                if (openFile.readByte() == id) {
+                    openFile.seek(pos);
+                    openFile.writeByte(-1);
+                }
+
+                openFile.readLong();
             }
-
-            pos = openFile.getFilePointer();
-            if (openFile.readByte() == id) {
-                openFile.seek(pos);
-                openFile.writeByte(-1);
-            }
-
-            pos = openFile.getFilePointer();
-            if (openFile.readByte() == id) {
-                openFile.seek(pos);
-                openFile.writeByte(-1);
-            }
-
-            pos = openFile.getFilePointer();
-            if (openFile.readByte() == id) {
-                openFile.seek(pos);
-                openFile.writeByte(-1);
-            }
-
-            pos = openFile.getFilePointer();
-            if (openFile.readByte() == id) {
-                openFile.seek(pos);
-                openFile.writeByte(-1);
-            }
-
-            openFile.readLong();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
     }
-}
 
-/**
-* This method updates the list if the name or artist is changed in the database
-* @param word
-* @param id
-* @param file
-*/
-public void updateInvertedList(String word, byte id, String file) {
-    try {
-        // deleta registo do arquivo e cria um novo alterado
-        deleteInvertedList(id, file);
-        createInvertedList(word, id, file);
-    } catch (Exception e) {
-        e.printStackTrace();
+    /**
+     * This method updates the list if the name or artist is changed in the database
+     * 
+     * @param word
+     * @param id
+     * @param file
+     */
+    public void updateInvertedList(String word, byte id, String file) {
+        try {
+            // deleta registo do arquivo e cria um novo alterado
+            deleteInvertedList(id, file);
+            createInvertedList(word, id, file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-}
 
     /**
      * Verify if the word to be inserted already exists in the file
@@ -254,8 +261,7 @@ public void updateInvertedList(String word, byte id, String file) {
      * @return
      */
     public boolean contains(String word, String file) {
-        try {
-            RandomAccessFile openFile = new RandomAccessFile(file, "rw");
+        try (RandomAccessFile openFile = new RandomAccessFile(file, "rw")) {
             String fileWord;
             openFile.seek(0);
             while (openFile.getFilePointer() < openFile.length()) {
@@ -275,6 +281,7 @@ public void updateInvertedList(String word, byte id, String file) {
         }
         return false;
     }
+
     /**
      * Remove useless words
      * 
@@ -307,8 +314,7 @@ public void updateInvertedList(String word, byte id, String file) {
      * @return
      */
     public long positionToInsert(String word, String file) {
-        try {
-            RandomAccessFile openFile = new RandomAccessFile(file, "rw");
+        try (RandomAccessFile openFile = new RandomAccessFile(file, "rw")) {
             String fileWord;
             long posToInsert = openFile.getFilePointer();
             openFile.seek(0);
@@ -359,6 +365,7 @@ public void updateInvertedList(String word, byte id, String file) {
 
     /**
      * This method checks if the ID is present in the list
+     * 
      * @param ids
      * @param id
      * @return
