@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 class Leaf extends Tree {
-    public final char value; // A letra é atribuida a um nó folha 
+    public final char value; 
  
     public Leaf(int freq, char val) {
         super(freq);
@@ -12,7 +12,7 @@ class Leaf extends Tree {
     }
 }
 abstract class Tree implements Comparable<Tree> {
-    public final int frequency; // Frequ�ncia da �rvore
+    public final int frequency;
     //
     public Tree(int freq) { 
     	frequency = freq; 
