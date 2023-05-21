@@ -7,9 +7,10 @@ import java.util.Scanner;
 import externalsort.CommonIntercalation;
 import externalsort.Selection;
 import externalsort.VariableIntercalation;
-import invertedlist.InvertedList;
+// import invertedList.InvertedList;
 import musica.Crud;
 import musica.Musica;
+import compression.LZW;
 
 import java.util.*;
 import java.io.File;
@@ -37,6 +38,8 @@ public class Menu {
             System.out.println("6- Procurar com B Plus Tree");
             System.out.println("7- Procurar com Extendible Hash");
             System.out.println("8- Buscar na lista invertida");
+            System.out.println("9- Compactar arquivo");
+            System.out.println("10- Descompactar arquivo");
             System.out.println("0- Sair");
             System.out.println("Digite a opção: ");
             op = scan.nextInt();
@@ -51,7 +54,7 @@ public class Menu {
     private static void menu(int op) throws Exception {
         Musica musica = new Musica();
         Crud crud = new Crud();
-        InvertedList il = new InvertedList();
+        // InvertedList il = new InvertedList();
         String word;
 
         int id;
@@ -63,10 +66,12 @@ public class Menu {
                 System.out.println(musica.toString());
                 crud.create(musica);
 
-                il.createInvertedList(musica.getName(), musica.getId(),
-                        "invertedList" + File.separator + "db" + File.separator + "invertedListNames.db");
-                il.createInvertedList(separateArtists(musica.getArtists()), musica.getId(),
-                        "invertedList" + File.separator + "db" + File.separator + "invertedListArtists.db");
+                // il.createInvertedList(musica.getName(), musica.getId(),
+                // "invertedList" + File.separator + "db" + File.separator +
+                // "invertedListNames.db");
+                // il.createInvertedList(separateArtists(musica.getArtists()), musica.getId(),
+                // "invertedList" + File.separator + "db" + File.separator +
+                // "invertedListArtists.db");
                 break;
             case 2:
                 // read
@@ -99,10 +104,12 @@ public class Menu {
                 } else {
                     System.err.println("Música não encontrada");
                 }
-                il.deleteInvertedList(idByte,
-                        "invertedList" + File.separator + "db" + File.separator + "invertedListNames.db");
-                il.deleteInvertedList(idByte,
-                        "invertedList" + File.separator + "db" + File.separator + "invertedListArtists.db");
+                // il.deleteInvertedList(idByte,
+                // "invertedList" + File.separator + "db" + File.separator +
+                // "invertedListNames.db");
+                // il.deleteInvertedList(idByte,
+                // "invertedList" + File.separator + "db" + File.separator +
+                // "invertedListArtists.db");
                 break;
             case 5:
                 int caminhos, bloco, heap;
@@ -176,7 +183,25 @@ public class Menu {
                         "Digite o termo que deseja procurar na lista invertida, seja por nome ou por artista: ");
                 scan.nextLine();
                 word = scan.nextLine();
-                menuSearchInvertedList(word);
+                // menuSearchInvertedList(word);
+                break;
+            case 9:
+                long time;
+                time = System.currentTimeMillis();
+                LZW.compress();
+                time = System.currentTimeMillis() - time;
+                System.out.println();
+                System.out.println("O tempo de execução da compactação por LZW foi: " + (double) time / 1000 + "s");
+                break;
+            case 10:
+                int version;
+                System.out.println(
+                        "Digite a versão do arquivo a descompactar: ");
+                version = scan.nextInt();
+                time = System.currentTimeMillis();
+                LZW.uncompress(version);
+                time = System.currentTimeMillis() - time;
+                System.out.println("O tempo de execução da descompactação por LZW foi: " + (double) time / 1000 + "s");
                 break;
             default:
                 System.out.println("Comando inválido");
@@ -289,7 +314,7 @@ public class Menu {
 
         Crud crud = new Crud();
         Musica musica;
-        InvertedList il = new InvertedList();
+        // InvertedList il = new InvertedList();
 
         System.out.println("Insira o id da música para alteração: ");
         id = scan.nextInt();
@@ -314,8 +339,9 @@ public class Menu {
                     name = scan.nextLine();
 
                     musica.setName(name);
-                    il.updateInvertedList(name, idByte,
-                            "invertedList" + File.separator + "db" + File.separator + "invertedListNames.db");
+                    // il.updateInvertedList(name, idByte,
+                    // "invertedList" + File.separator + "db" + File.separator +
+                    // "invertedListNames.db");
 
                     break;
                 case 2:
@@ -327,8 +353,9 @@ public class Menu {
                     }
 
                     musica.setArtists(artists);
-                    il.updateInvertedList(separateArtists(artists), idByte,
-                            "invertedList" + File.separator + "db" + File.separator + "invertedListArtists.db");
+                    // il.updateInvertedList(separateArtists(artists), idByte,
+                    // "invertedList" + File.separator + "db" + File.separator +
+                    // "invertedListArtists.db");
 
                     break;
                 case 3:
@@ -368,31 +395,33 @@ public class Menu {
     }
 
     public static void menuSearchInvertedList(String word) throws Exception {
-        InvertedList iList = new InvertedList();
-        Musica music = new Musica();
-        Crud crud_ = new Crud();
+        // InvertedList iList = new InvertedList();
+        // Musica music = new Musica();
+        // Crud crud_ = new Crud();
 
-        ArrayList<Byte> idsNames = iList.readInvertedList(word,
-                "invertedList" + File.separator + "db" + File.separator + "invertedListNames.db");
-        ArrayList<Byte> idsArtists = iList.readInvertedList(word,
-                "invertedList" + File.separator + "db" + File.separator + "invertedListArtists.db");
-        System.out.println("Musicas localizadas:");
-        for (int i = 0; i < idsNames.size(); i++) {
-            music = crud_.read(idsNames.get(i));
-            if (music != null) {
-                System.out.println(music.toString());
-            } else {
-                System.out.println("Nenhuma música localizada com esse nome");
-            }
-        }
-        for (int i = 0; i < idsArtists.size(); i++) {
-            music = crud_.read(idsArtists.get(i));
-            if (music != null) {
-                System.out.println(music.toString());
-            } else {
-                System.out.println("Nenhuma música localizada com esse artista");
-            }
-        }
+        // ArrayList<Byte> idsNames = iList.readInvertedList(word,
+        // "invertedList" + File.separator + "db" + File.separator +
+        // "invertedListNames.db");
+        // ArrayList<Byte> idsArtists = iList.readInvertedList(word,
+        // "invertedList" + File.separator + "db" + File.separator +
+        // "invertedListArtists.db");
+        // System.out.println("Musicas localizadas:");
+        // for (int i = 0; i < idsNames.size(); i++) {
+        // music = crud_.read(idsNames.get(i));
+        // if (music != null) {
+        // System.out.println(music.toString());
+        // } else {
+        // System.out.println("Nenhuma música localizada com esse nome");
+        // }
+        // }
+        // for (int i = 0; i < idsArtists.size(); i++) {
+        // music = crud_.read(idsArtists.get(i));
+        // if (music != null) {
+        // System.out.println(music.toString());
+        // } else {
+        // System.out.println("Nenhuma música localizada com esse artista");
+        // }
+        // }
     }
 
     public static String separateArtists(ArrayList<String> artists) {
