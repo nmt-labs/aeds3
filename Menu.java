@@ -22,12 +22,12 @@ import java.nio.charset.*;
 
 public class Menu {
     public static Scanner scan = new Scanner(System.in);
-    public static PatternSearch padrao;
+    public static PatternSearch pattern;
     public static String fileName = "db" + File.separator + "musicas.db";
 
     public static void main(String[] args) throws Exception {
         int op = -1;
-        padrao = new PatternSearch(new File(fileName));
+        pattern = new PatternSearch(new File(fileName));
 
         System.out.println("-------------------------------------------------------------");
         System.out.println("|                      SPOTIFY DATASET                      |");
@@ -447,7 +447,7 @@ public class Menu {
             scan.nextLine();
             System.out.println("O sistema realizara uma busca por seu padrão no arquivo de dados\nDigite o padrão:");
             String txt = scan.nextLine();
-            padrao.search(txt, BoyerMoore::find);
+            pattern.search(txt, BoyerMoore::find);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

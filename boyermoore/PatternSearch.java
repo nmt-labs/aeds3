@@ -27,16 +27,19 @@ public class PatternSearch {
      * then call the desired pattern searching method.
      * 
      * @param pattern  The string pattern to be searched in the file.
-     * @param searcher The desired pattern searching function to be used.
+     * @param searcher The desired pattern searching function to be used. -> Booyer Moore in this case
      * @throws Exception I/O errors caused by RandomAccessFile.
+     * 
+     * BiFuncion -> 1st argument = String, 2nd argument = String, return = PatternSearchInfo
      */
     public void search(String pattern, BiFunction<String, String, PatternSearchInfo> searcher) throws Exception {
         src.seek(FILE_HEADER_SIZE);
-        Musica[] regs = getMusicas();
+        Musica[] regs = getMusicas(); // put data in a string to read in primary memory
         PatternSearchInfo info = new PatternSearchInfo();
         while (regs[0] != null) {
             for (int i = 0; regs[i] != null;) {
-                info.sum(searcher.apply(pattern, regs[i++].toString()));
+              // applies find() function from BoyerMoore class
+                info.sum(searcher.apply(pattern, regs[i++].toString())); 
             }
             regs = getMusicas();
         }
