@@ -44,7 +44,7 @@ public class PatternSearch {
             regs = getMusicas();
         }
         System.out.println("O padrão '" + pattern + "' foi encontrado " + info.getFoundCount() + " vezes no arquivo.");
-        System.out.println("Total de comparações: " + info.getNumComp());
+        System.out.println("Total de comparações (Boyer Moore): " + info.getNumComp());
     }
 
     /**
