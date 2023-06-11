@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import boyermoore.BoyerMoore;
+import boyermoore.PatternSearch;
+import kmp.KMP;
 import externalsort.CommonIntercalation;
 import externalsort.Selection;
 import externalsort.VariableIntercalation;
@@ -20,9 +23,13 @@ import java.nio.charset.*;
 
 public class Menu {
     public static Scanner scan = new Scanner(System.in);
+    public static PatternSearch pattern;
+    public static KMP Kmp;
+    public static String fileName = "db" + File.separator + "musicas.db";
 
     public static void main(String[] args) throws Exception {
         int op = -1;
+        pattern = new PatternSearch(new File(fileName));
 
         System.out.println("-------------------------------------------------------------");
         System.out.println("|                      SPOTIFY DATASET                      |");
@@ -40,6 +47,7 @@ public class Menu {
             System.out.println("8- Buscar na lista invertida");
             System.out.println("9- Compactar arquivo");
             System.out.println("10- Descompactar arquivo");
+            System.out.println("11- Buscar padrão");
             System.out.println("0- Sair");
             System.out.println("Digite a opção: ");
             op = scan.nextInt();
@@ -56,6 +64,7 @@ public class Menu {
         Crud crud = new Crud();
         // InvertedList il = new InvertedList();
         String word;
+        boolean status = false;
 
         int id;
 
@@ -202,6 +211,12 @@ public class Menu {
                 LZW.uncompress(version);
                 time = System.currentTimeMillis() - time;
                 System.out.println("O tempo de execução da descompactação por LZW foi: " + (double) time / 1000 + "s");
+                break;
+            case 11:
+                status = menuPattern();
+                if (status) {
+                    System.out.println("Busca realizada com sucesso na base de dados!");
+                }
                 break;
             default:
                 System.out.println("Comando inválido");
@@ -427,5 +442,33 @@ public class Menu {
     public static String separateArtists(ArrayList<String> artists) {
         String artistsString = String.join(" ", artists);
         return artistsString;
+    }
+
+    public static boolean menuPattern() {
+        long time;
+        try {
+            scan.nextLine();
+            System.out.println("O sistema realizara uma busca por seu padrão no arquivo de dados\nDigite o padrão:");
+            String txt = scan.nextLine();
+            time = System.currentTimeMillis();
+            KMP kmp = new KMP();
+            kmp.kmp(txt);
+            time = System.currentTimeMillis() - time;
+            System.out
+                    .println("O tempo de execução da busca pelo método KMP foi: " + (double) time / 1000 + "s");
+
+            System.out.println();
+
+            time = System.currentTimeMillis();
+            pattern.search(txt, BoyerMoore::find);
+            time = System.currentTimeMillis() - time;
+            System.out
+                    .println("O tempo de execução da busca pelo método Boyer Moore foi: " + (double) time / 1000 + "s");
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
