@@ -2,9 +2,6 @@ package boyermoore;
 
 import java.util.Hashtable;
 
-/**
- * @author Vinicius G Santos
- */
 public class BoyerMoore {
 
   /**
