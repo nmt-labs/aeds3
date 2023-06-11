@@ -1,4 +1,4 @@
-package invertedList;
+package invertedlist;
 
 import java.io.RandomAccessFile;
 import java.text.ParseException;
