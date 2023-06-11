@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import boyermoore.BoyerMoore;
 import boyermoore.PatternSearch;
+import kmp.KMP;
 import externalsort.CommonIntercalation;
 import externalsort.Selection;
 import externalsort.VariableIntercalation;
@@ -23,6 +24,7 @@ import java.nio.charset.*;
 public class Menu {
     public static Scanner scan = new Scanner(System.in);
     public static PatternSearch pattern;
+    public static KMP Kmp;
     public static String fileName = "db" + File.separator + "musicas.db";
 
     public static void main(String[] args) throws Exception {
@@ -443,11 +445,26 @@ public class Menu {
     }
 
     public static boolean menuPattern() {
+        long time;
         try {
             scan.nextLine();
             System.out.println("O sistema realizara uma busca por seu padrão no arquivo de dados\nDigite o padrão:");
             String txt = scan.nextLine();
+            time = System.currentTimeMillis();
+            KMP kmp = new KMP();
+            kmp.kmp(txt);
+            time = System.currentTimeMillis() - time;
+            System.out
+                    .println("O tempo de execução da busca pelo método KMP foi: " + (double) time / 1000 + "s");
+
+            System.out.println();
+
+            time = System.currentTimeMillis();
             pattern.search(txt, BoyerMoore::find);
+            time = System.currentTimeMillis() - time;
+            System.out
+                    .println("O tempo de execução da busca pelo método Boyer Moore foi: " + (double) time / 1000 + "s");
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();
