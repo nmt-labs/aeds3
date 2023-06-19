@@ -2,7 +2,8 @@ package musica;
 import java.util.ArrayList;
 import java.util.Date;
 
-import cryptography.BlockCipher;
+import cryptography.blocks.BlockCipher;
+import cryptography.cesar.Cesar;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,7 +21,8 @@ public class Musica {
   protected int id, duration_ms, explicit;
   protected double tempo;
   protected Date release_date;
-  private static final BlockCipher CIPHER = new BlockCipher();
+  private static final BlockCipher BLOCK = new BlockCipher();  
+  private static final Cesar CESAR = new Cesar();
 
   // constructors
   public Musica (){
@@ -44,8 +46,8 @@ public class Musica {
 
   // sets
   public void setId(int id) { this.id = id; }
-  public void setKey(String key) { this.key = key; }
-  public void setName(String name) { this.name = CIPHER.crypt(name); } // criptografia
+  public void setKey(String key) { this.key = CESAR.crypt(key); } // criptografia de cesar
+  public void setName(String name) { this.name = BLOCK.crypt(name); } // criptografia de bloco
   public void setArtists(ArrayList<String> artists) { this.artists = artists; }
   public void setDuration_ms(int duration_ms) { this.duration_ms = duration_ms; }
   public void setExplicit(int explicit) { this.explicit = explicit; }
@@ -54,8 +56,8 @@ public class Musica {
 
   // gets
   public int getId() { return id; }
-  public String getKey() { return key; }
-  public String getName() { return CIPHER.decrypt(name); } // criptografia
+  public String getKey() { return CESAR.crypt(key); } // criptografia de cesar
+  public String getName() { return BLOCK.decrypt(name); } // criptografia de bloco
   public ArrayList<String> getArtists() { return artists; }
   public int getDuration_ms() { return duration_ms; }
   public int getExplicit() { return explicit; }

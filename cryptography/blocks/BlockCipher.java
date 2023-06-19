@@ -1,6 +1,6 @@
-package cryptography;
+package cryptography.blocks;
 
-public class BlockCipher implements Cryptable {
+public class BlockCipher  {
 
     public static final int BLOCK_SIZE = 6; // 6 Bytes
     public static String DEFAULT_KEY;
@@ -19,7 +19,6 @@ public class BlockCipher implements Cryptable {
         DEFAULT_KEY = "teste*.*123";
     }
 
-    @Override
     public String crypt(String base) {
         if (base != null && base.length() > 0 && !base.equals(" "))
             return blockEngine(base.toCharArray(), true);
@@ -27,7 +26,6 @@ public class BlockCipher implements Cryptable {
             return "";
     }
 
-    @Override
     public String decrypt(String base) {
         if (base != null && base.length() > 0 && !base.equals(" "))
             return blockEngine(base.toCharArray(), false);

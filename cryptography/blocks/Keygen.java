@@ -1,4 +1,4 @@
-package cryptography;
+package cryptography.blocks;
 
 public class Keygen {
 
