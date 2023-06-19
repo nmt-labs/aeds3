@@ -45,14 +45,14 @@ public class Crud {
     file.writeInt(musica.getId()); // escreve id da ultima musica no inicio do arquivo
     file.seek(file.length());// mover para o fim do arquivo
     long pos = file.getFilePointer();
-
+    
     // escrever registro
     file.writeChar(' '); // escreve a lápide
     file.writeInt(ba.length); // escreve tamanho do registro
     file.write(ba);
-
+    
     file.close();
-
+    
     // inserir arquivo de indice
     indice(musica.getId(), pos);
 

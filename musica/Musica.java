@@ -35,8 +35,8 @@ public class Musica {
 
   public Musica (int id, String key, String name, ArrayList<String> artists, int duration_ms, int explicit, double tempo, Date release_date) {
     this.id = id;
-    this.key = key;
-    this.name = name;
+    this.key = key; // cesar
+    this.name =  name; //bloco
     this.artists = artists;
     this.duration_ms = duration_ms;
     this.explicit = explicit;
@@ -46,8 +46,8 @@ public class Musica {
 
   // sets
   public void setId(int id) { this.id = id; }
-  public void setKey(String key) { this.key = CESAR.crypt(key); } // criptografia de cesar
-  public void setName(String name) { this.name = BLOCK.crypt(name); } // criptografia de bloco
+  public void setKey(String key) { this.key = key; }
+  public void setName(String name) { this.name = name; }
   public void setArtists(ArrayList<String> artists) { this.artists = artists; }
   public void setDuration_ms(int duration_ms) { this.duration_ms = duration_ms; }
   public void setExplicit(int explicit) { this.explicit = explicit; }
@@ -56,8 +56,8 @@ public class Musica {
 
   // gets
   public int getId() { return id; }
-  public String getKey() { return CESAR.crypt(key); } // criptografia de cesar
-  public String getName() { return BLOCK.decrypt(name); } // criptografia de bloco
+  public String getKey() { return key; }
+  public String getName() { return name; }
   public ArrayList<String> getArtists() { return artists; }
   public int getDuration_ms() { return duration_ms; }
   public int getExplicit() { return explicit; }
@@ -76,8 +76,8 @@ public class Musica {
     String release_date_string = date_format.format(this.release_date);
 
     dos.writeInt(this.id);
-    dos.writeUTF(this.key);
-    dos.writeUTF(this.name);
+    dos.writeUTF(CESAR.crypt(this.key));
+    dos.writeUTF(BLOCK.crypt(this.name));
     dos.writeInt(this.duration_ms);
     dos.writeInt(this.explicit);
     dos.writeInt(artists.size());
@@ -98,7 +98,9 @@ public class Musica {
 
     this.id = dis.readInt();
     this.key = dis.readUTF(); 
+    this.key = CESAR.decrypt(this.key); //cesar
     this.name = dis.readUTF(); 
+    this.name = BLOCK.decrypt(this.name); //bloco
     this.duration_ms = dis.readInt();
     this.explicit = dis.readInt();
     
