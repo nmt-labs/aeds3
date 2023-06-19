@@ -1,6 +1,9 @@
 package musica;
 import java.util.ArrayList;
 import java.util.Date;
+
+import cryptography.BlockCipher;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -17,6 +20,7 @@ public class Musica {
   protected int id, duration_ms, explicit;
   protected double tempo;
   protected Date release_date;
+  private static final BlockCipher CIPHER = new BlockCipher();
 
   // constructors
   public Musica (){
@@ -41,7 +45,7 @@ public class Musica {
   // sets
   public void setId(int id) { this.id = id; }
   public void setKey(String key) { this.key = key; }
-  public void setName(String name) { this.name = name; }
+  public void setName(String name) { this.name = CIPHER.crypt(name); } // criptografia
   public void setArtists(ArrayList<String> artists) { this.artists = artists; }
   public void setDuration_ms(int duration_ms) { this.duration_ms = duration_ms; }
   public void setExplicit(int explicit) { this.explicit = explicit; }
@@ -51,7 +55,7 @@ public class Musica {
   // gets
   public int getId() { return id; }
   public String getKey() { return key; }
-  public String getName() { return name; }
+  public String getName() { return CIPHER.decrypt(name); } // criptografia
   public ArrayList<String> getArtists() { return artists; }
   public int getDuration_ms() { return duration_ms; }
   public int getExplicit() { return explicit; }
